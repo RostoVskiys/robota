@@ -1,0 +1,79 @@
+#include <iostream>
+#include <locale>
+using namespace std;
+struct Rectangle {
+    int x, y;
+    int width;
+    int height;
+};
+void prints(const Rectangle& r) {
+    cout << "позиция x: " << r.x << endl;
+    cout << "позицыя y: " << r.y << endl;
+    cout << "ширина: " << r.width << " ";
+    cout << "высота: " << r.height << endl;
+}
+void modes(Rectangle& r) {
+    int choice;
+    do {
+        cout << "Меню: "
+            << "1. переместить прямоугольник "
+            << "2. изменить размер "
+            << "3. показать текущие значения "
+            << "0. выйти " << endl;
+        cout << "выберите действие: ";
+        cin >> choice;
+
+        switch (choice) {
+        case 1: {
+            int dx, dy;
+            cout << "введите сдвиг по X: ";
+            cin >> dx;
+            cout << "введите сдвиг по Y: ";
+            cin >> dy;
+            r.x += dx;
+            r.y += dy;
+            cout << "прямоугольник перемещен." << endl;
+            break;
+        }
+        case 2: {
+            int newwidth, newheight;
+            cout << "ведите новую ширину: ";
+            cin >> newwidth;
+            cout << "ведите новую высоту: ";
+            cin >> newheight;
+            if (newwidth > 0 && newheight > 0) {
+                r.width = newwidth;
+                r.height = newheight;
+                cout << "Размер изменен." << endl;
+            }
+            else {
+                cerr << "ошибка: " << endl;
+            }
+            break;
+        }
+        case 3:
+            prints(r);
+            break;
+        case 0:
+            cout << "выход из программы" << endl;
+            break;
+        default:
+            cerr << "ошибка: " << endl;
+            break;
+        }
+    } while (choice != 0);
+}
+int main() {
+    setlocale(LC_ALL, "");
+    Rectangle r;
+    cout << "начальные значения x. ";
+    cin >> r.x;
+    cout << "начальные значения y. ";
+    cin >> r.y;
+    cout << "ширина: ";
+    cin >> r.width;
+    cout << "высота: ";
+    cin >> r.height;
+    modes(r);
+    return 0;
+}

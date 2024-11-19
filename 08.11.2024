@@ -1,0 +1,212 @@
+#include <iostream>
+using namespace std;
+
+// Структура для хранения информации о книге
+struct Book {
+    char* name; 
+    char* author;  
+    int publish_year; 
+    int pages_num;  
+    int id;  
+};
+
+// Функция для копирования строки
+void copyString(char*& dest, const char* source) {
+    int length = 0;
+    while (source[length] != '\0') {
+        length++;
+    }
+    dest = new char[length + 1];
+    for (int i = 0; i < length; i++) {
+        dest[i] = source[i];
+    }
+    dest[length] = '\0';
+}
+
+// Функция для сравнения строк
+bool compareStrings(const char* str1, const char* str2) {
+    int i = 0;
+    while (str1[i] != '\0' && str2[i] != '\0') {
+        if (str1[i] != str2[i]) {
+            return false;
+        }
+        i++;
+    }
+    return str1[i] == '\0' && str2[i] == '\0';
+}
+
+// Создание книги
+Book createBook() {
+    char buffer[100];
+
+    cout << "Enter book title: "; 
+    cin.ignore();
+    cin.getline(buffer, 100);
+    char* name = nullptr;
+    copyString(name, buffer);
+
+    cout << "Enter book author: "; 
+    cin.getline(buffer, 100);
+    char* author = nullptr;
+    copyString(author, buffer);
+
+    int publish_year, pages_num, id;
+    cout << "Enter year of publication: "; 
+    cin >> publish_year;
+    cout << "Enter number of pages: ";
+    cin >> pages_num;
+    cout << "Enter book ID: "; 
+    cin >> id;
+
+    return { name, author, publish_year, pages_num, id };
+}
+
+// Показ одной книги
+void showBook(const Book& book) {
+    cout << "Title: " << book.name << endl;  
+    cout << "Author: " << book.author << endl;  
+    cout << "Year of Publication: " << book.publish_year << endl;  
+    cout << "Number of Pages: " << book.pages_num << endl;
+    cout << "ID: " << book.id << endl;  
+}
+
+// Показ массива книг
+void showArr(Book* arr, int size) {
+    if (size == 0) {
+        cout << "The book list is empty." << endl; 
+        return;
+    }
+    for (int i = 0; i < size; i++) {
+        cout << "\nBook #" << i + 1 << ":" << endl;  
+        showBook(arr[i]);
+    }
+}
+
+// Наполнение массива книг
+void fillArr(Book* arr, int size) {
+    for (int i = 0; i < size; i++) {
+        cout << "\nAdding book #" << i + 1 << ":" << endl;  
+        arr[i] = createBook();
+    }
+}
+
+// Поиск книги по автору
+void findBookByAuthor(Book* arr, int size) {
+    cout << "Enter the author's name to search: ";  
+    char buffer[100];
+    cin.ignore();
+    cin.getline(buffer, 100); 
+
+    bool found = false;
+    for (int i = 0; i < size; i++) {
+        if (compareStrings(arr[i].author, buffer)) {
+            cout << "\nBook found:" << endl; 
+            showBook(arr[i]);
+            found = true;
+        }
+    }
+    if (!found) {
+        cout << "No books found by this author." << endl;  
+    }
+}
+
+// Редактирование книги
+void editBook(Book& book) {
+    char buffer[100];
+    cout << "Enter new book title: ";  
+    cin.ignore();
+    cin.getline(buffer, 100);
+    delete[] book.name;
+    copyString(book.name, buffer);
+    cout << "Enter new author: ";  
+    cin.getline(buffer, 100);
+    delete[] book.author;
+    copyString(book.author, buffer);
+    cout << "Enter new year of publication: ";  
+    cin >> book.publish_year;
+    cout << "Enter new number of pages: ";  
+    cin >> book.pages_num;
+    cout << "Enter new book ID: ";  
+    cin >> book.id;
+
+    cout << "Book successfully updated." << endl;  
+}
+
+// Редактирование книги по ID
+void editBookById(Book* arr, int size) {
+    cout << "Enter the book ID to edit: ";  
+    int id;
+    cin >> id;
+
+    for (int i = 0; i < size; i++) {
+        if (arr[i].id == id) {
+            cout << "\nEditing book:" << endl; 
+            editBook(arr[i]);
+            return;
+        }
+    }
+    cout << "Book with this ID not found." << endl;  
+}
+
+// Добавление книги
+void addBook(Book*& arr, int& size) {
+    Book* newArr = new Book[size + 1];
+    for (int i = 0; i < size; i++) {
+        newArr[i] = arr[i];
+    }
+    newArr[size] = createBook();
+    delete[] arr;
+    arr = newArr;
+    size++;
+    cout << "Book added." << endl;  
+}
+
+// Очистка памяти
+void clearMemory(Book* arr, int size) {
+    for (int i = 0; i < size; i++) {
+        delete[] arr[i].name;
+        delete[] arr[i].author;
+    }
+    delete[] arr;
+}
+
+int main() {
+    int size;
+    cout << "Enter the number of books: ";  
+    cin >> size;
+    Book* arr = new Book[size];
+    fillArr(arr, size);
+    bool running = true;
+    while (running) {
+        cout << "\nMenu:" << endl;   
+        cout << "1. Show all books" << endl;   
+        cout << "2. Find a book by author" << endl;  
+        cout << "3. Edit a book by ID" << endl;  
+        cout << "4. Add a book" << endl;  
+        cout << "5. Exit" << endl;  
+        cout << "Your choice: ";  
+        int choice;
+        cin >> choice;
+        switch (choice) {
+        case 1:
+            showArr(arr, size);
+            break;
+        case 2:
+            findBookByAuthor(arr, size);
+            break;
+        case 3:
+            editBookById(arr, size);
+            break;
+        case 4:
+            addBook(arr, size);
+            break;
+        case 5:
+            running = false;
+            break;
+        default:
+            cout << "Invalid choice. Please try again." << endl;  
+        }
+    }
+    clearMemory(arr, size);
+    return 0;
+}

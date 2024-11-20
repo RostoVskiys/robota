@@ -1,0 +1,16 @@
+#include <iostream>
+using namespace std;
+int main() {
+    const char* files = "file.bin";
+    FILE* file;
+    int count = 0;
+    char c;
+    if (fopen_s(&file, files, "rb") == 0) {
+        while (fread(&c, sizeof(char), 1, file) == 1) {
+            count++;
+        }
+        fclose(file);
+        cout << "Total number of characters in the file: " << count << endl;
+    }
+    return 0;
+}

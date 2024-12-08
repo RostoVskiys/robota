@@ -1,0 +1,48 @@
+#include <iostream>
+
+using namespace std;
+
+int* deletes(int* arr, int size, int& newsize) {
+    newsize = 0;
+    for (int i = 0; i < size; i++) {
+        if (arr[i] < 0) {
+            newsize++;
+        }
+    }
+
+    int* newarr = new int[newsize];
+    int index = 0;
+
+    for (int i = 0; i < size; i++) {
+        if (arr[i] < 0) {
+            newarr[index++] = arr[i];
+        }
+    }
+
+    return newarr;
+}
+
+int main() {
+    int size = 10; 
+    int* arr = new int[size] {3, -2, 0, -7, 5, -4, 0, 8, -1, 6};
+
+    cout << "Початковий масив: ";
+    for (int i = 0; i < size; i++) {
+        cout << arr[i] << " ";
+    }
+    cout << endl;
+
+    int newsize;
+    int* newarr = deletes (arr, size, newsize);
+
+    cout << "Новий масив: ";
+    for (int i = 0; i < newsize; i++) {
+        cout << newarr[i] << " ";
+    }
+    cout << endl;
+
+    delete[] arr;
+    delete[] newarr;
+
+    return 0;
+}

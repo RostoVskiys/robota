@@ -26,7 +26,7 @@ int main() {
     int size = 10; 
     int* arr = new int[size] {3, -2, 0, -7, 5, -4, 0, 8, -1, 6};
 
-    cout << "Початковий масив: ";
+    cout << "Cob massif: ";
     for (int i = 0; i < size; i++) {
         cout << arr[i] << " ";
     }
@@ -35,7 +35,7 @@ int main() {
     int newsize;
     int* newarr = deletes (arr, size, newsize);
 
-    cout << "Новий масив: ";
+    cout << "new array : ";
     for (int i = 0; i < newsize; i++) {
         cout << newarr[i] << " ";
     }

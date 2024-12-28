@@ -1,0 +1,45 @@
+#include <iostream>
+using namespace std;
+
+class String {
+private:
+    char* str;
+    size_t length;
+
+    size_t my_strlen(const char* input) {
+        size_t len = 0;
+        while (input[len] != '\0') {
+            len++;
+        }
+        return len;
+    }
+
+    void strle(char* dest, const char* src) {
+        while (*src) {
+            *dest++ = *src++;
+        }
+        *dest = '\0';
+    }
+
+public:
+    String() {
+        length = 100;
+        str = new char[length + 1];
+        strle(str, "hello");
+    }
+
+    ~String() {
+        delete[] str;
+    }
+ 
+    void display() const {
+        cout << str << endl;
+    }
+};
+
+int main() {
+    String str;
+    str.display();
+
+    return 0;
+}

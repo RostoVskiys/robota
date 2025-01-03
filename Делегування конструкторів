@@ -29,8 +29,8 @@ private:
 public:
     Dribs(int num = 0, int denom = 1) {
         if (denom == 0) {
-            cout << "деление на ноль невозможно\n";
-            denom = 1; 
+            cout << "Division by zero is not allowed\n";
+            denom = 1;
         }
         numerator = num;
         denominator = denom;
@@ -38,12 +38,12 @@ public:
     }
 
     bool inputFraction() {
-        cout << "вести числитель: ";
+        cout << "Enter numerator: ";
         cin >> numerator;
-        cout << "вести знаменатель: ";
+        cout << "Enter denominator: ";
         cin >> denominator;
         if (denominator == 0) {
-            cout << "деление на ноль невозможно\n";
+            cout << "Division by zero is not allowed\n";
             return false;
         }
         simplify();
@@ -70,8 +70,8 @@ public:
 
     Dribs operator/(const Dribs& other) const {
         if (other.numerator == 0) {
-            cout << "деление на ноль невозможно.\n";
-            return Dribs(0, 1); 
+            cout << "Division by zero is not allowed.\n";
+            return Dribs(0, 1);
         }
         int num = numerator * other.denominator;
         int denom = denominator * other.numerator;
@@ -92,33 +92,33 @@ int main() {
     setlocale(LC_ALL, "");
     Dribs drib1, drib2;
 
-    cout << "водим 1 дроб:\n";
+    cout << "Enter the first fraction:\n";
     if (!drib1.inputFraction()) {
     }
 
-    cout << "водим 2 дроб:\n";
+    cout << "Enter the second fraction:\n";
     if (!drib2.inputFraction()) {
     }
 
-    cout << "\n1 дроб: ";
+    cout << "\nFirst fraction: ";
     drib1.print();
-    cout << "\n2 дроб: ";
+    cout << "\nSecond fraction: ";
     drib2.print();
 
     Dribs result_add = drib1 + drib2;
-    cout << "\nДодаэм: ";
+    cout << "\nAdding: ";
     result_add.print();
 
     Dribs result_sub = drib1 - drib2;
-    cout << "\nОтнимаем: ";
+    cout << "\nSubtracting: ";
     result_sub.print();
 
     Dribs result_mul = drib1 * drib2;
-    cout << "\nМножым: ";
+    cout << "\nMultiplying: ";
     result_mul.print();
 
     Dribs result_div = drib1 / drib2;
-    cout << "\nДелим: ";
+    cout << "\nDividing: ";
     result_div.print();
     cout << endl;
 

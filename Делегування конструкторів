@@ -1,0 +1,126 @@
+#include <iostream>
+#include <locale> 
+using namespace std;
+
+class Dribs {
+private:
+    int numerator;
+    int denominator;
+
+    int gcd(int a, int b) {
+        while (b != 0) {
+            int temp = b;
+            b = a % b;
+            a = temp;
+        }
+        return a;
+    }
+
+    void simplify() {
+        int gcd_value = gcd(abs(numerator), abs(denominator));
+        numerator /= gcd_value;
+        denominator /= gcd_value;
+        if (denominator < 0) {
+            numerator = -numerator;
+            denominator = -denominator;
+        }
+    }
+
+public:
+    Dribs(int num = 0, int denom = 1) {
+        if (denom == 0) {
+            cout << "деление на ноль невозможно\n";
+            denom = 1; 
+        }
+        numerator = num;
+        denominator = denom;
+        simplify();
+    }
+
+    bool inputFraction() {
+        cout << "вести числитель: ";
+        cin >> numerator;
+        cout << "вести знаменатель: ";
+        cin >> denominator;
+        if (denominator == 0) {
+            cout << "деление на ноль невозможно\n";
+            return false;
+        }
+        simplify();
+        return true;
+    }
+
+    Dribs operator+(const Dribs& other) const {
+        int num = numerator * other.denominator + other.numerator * denominator;
+        int denom = denominator * other.denominator;
+        return Dribs(num, denom);
+    }
+
+    Dribs operator-(const Dribs& other) const {
+        int num = numerator * other.denominator - other.numerator * denominator;
+        int denom = denominator * other.denominator;
+        return Dribs(num, denom);
+    }
+
+    Dribs operator*(const Dribs& other) const {
+        int num = numerator * other.numerator;
+        int denom = denominator * other.denominator;
+        return Dribs(num, denom);
+    }
+
+    Dribs operator/(const Dribs& other) const {
+        if (other.numerator == 0) {
+            cout << "деление на ноль невозможно.\n";
+            return Dribs(0, 1); 
+        }
+        int num = numerator * other.denominator;
+        int denom = denominator * other.numerator;
+        return Dribs(num, denom);
+    }
+
+    void print() const {
+        if (denominator == 1) {
+            cout << numerator;
+        }
+        else {
+            cout << numerator << "/" << denominator;
+        }
+    }
+};
+
+int main() {
+    setlocale(LC_ALL, "");
+    Dribs drib1, drib2;
+
+    cout << "водим 1 дроб:\n";
+    if (!drib1.inputFraction()) {
+    }
+
+    cout << "водим 2 дроб:\n";
+    if (!drib2.inputFraction()) {
+    }
+
+    cout << "\n1 дроб: ";
+    drib1.print();
+    cout << "\n2 дроб: ";
+    drib2.print();
+
+    Dribs result_add = drib1 + drib2;
+    cout << "\nДодаэм: ";
+    result_add.print();
+
+    Dribs result_sub = drib1 - drib2;
+    cout << "\nОтнимаем: ";
+    result_sub.print();
+
+    Dribs result_mul = drib1 * drib2;
+    cout << "\nМножым: ";
+    result_mul.print();
+
+    Dribs result_div = drib1 / drib2;
+    cout << "\nДелим: ";
+    result_div.print();
+    cout << endl;
+
+    return 0;
+}

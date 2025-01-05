@@ -1,0 +1,192 @@
+#include <iostream>
+using namespace std;
+
+class Date {
+private:
+    int day;
+    int month;
+    int year;
+
+public:
+    Date(int d, int m, int y) : day(d), month(m), year(y) {}
+
+    void display() const {
+        cout << (day < 10 ? "0" : "") << day << "."
+            << (month < 10 ? "0" : "") << month << "."
+            << year;
+    }
+};
+
+class Subscriber {
+private:
+    char fullName[100];
+    char phoneNumber[15];
+    Date birthDate;
+    static int count;
+
+public:
+    Subscriber(const char* name, const char* phone, int day, int month, int year)
+        : birthDate(day, month, year) {
+        size_t i = 0;
+        for (; i < sizeof(fullName) - 1 && name[i] != '\0'; ++i) {
+            fullName[i] = name[i];
+        }
+        fullName[i] = '\0';
+
+        i = 0;
+        for (; i < sizeof(phoneNumber) - 1 && phone[i] != '\0'; ++i) {
+            phoneNumber[i] = phone[i];
+        }
+        phoneNumber[i] = '\0';
+        count++;
+    }
+
+    ~Subscriber() {
+        count--;
+    }
+
+    static int getCount() {
+        return count;
+    }
+
+    const char* getName() const {
+        return fullName;
+    }
+
+    void display() const {
+        cout << "Name: " << fullName << ", Phone: " << phoneNumber << ", Birth Date: ";
+        birthDate.display();
+        cout << endl;
+    }
+};
+
+int Subscriber::count = 0;
+
+class PhoneBook {
+private:
+    Subscriber* subscribers[100];
+    int subscriberCount;
+
+public:
+    PhoneBook() : subscriberCount(0) {}
+
+    ~PhoneBook() {
+        for (int i = 0; i < subscriberCount; ++i) {
+            delete subscribers[i];
+        }
+    }
+
+    void addSubscriber(const char* name, const char* phone, int day, int month, int year) {
+        if (subscriberCount < 100) {
+            subscribers[subscriberCount++] = new Subscriber(name, phone, day, month, year);
+            cout << "Subscriber added." << endl;
+        }
+        else {
+            cout << "Phonebook is full." << endl;
+        }
+    }
+
+    void deleteSubscriber(const char* name) {
+        for (int i = 0; i < subscriberCount; ++i) {
+            if (strcmp(subscribers[i]->getName(), name) == 0) {
+                delete subscribers[i];
+                for (int j = i; j < subscriberCount - 1; ++j) {
+                    subscribers[j] = subscribers[j + 1];
+                }
+                subscriberCount--;
+                cout << "Subscriber deleted." << endl;
+                return;
+            }
+        }
+        cout << "Subscriber not found." << endl;
+    }
+
+    void findSubscriber(const char* name) const {
+        for (int i = 0; i < subscriberCount; ++i) {
+            if (strcmp(subscribers[i]->getName(), name) == 0) {
+                subscribers[i]->display();
+                return;
+            }
+        }
+        cout << "Subscriber not found." << endl;
+    }
+
+    void displayAll() const {
+        if (subscriberCount == 0) {
+            cout << "Phonebook is empty." << endl;
+        }
+        else {
+            for (int i = 0; i < subscriberCount; ++i) {
+                subscribers[i]->display();
+            }
+        }
+    }
+
+    void interactiveMenu() {
+        while (true) {
+            cout << "\nPhonebook Menu:\n";
+            cout << "1. Add Subscriber\n";
+            cout << "2. Delete Subscriber\n";
+            cout << "3. Find Subscriber\n";
+            cout << "4. Show All Subscribers\n";
+            cout << "5. Exit\n";
+            cout << "Choose an option: ";
+
+            int choice;
+            cin >> choice;
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+            switch (choice) {
+            case 1: {
+                char name[100];
+                char phone[15];
+                int day, month, year;
+
+                cout << "Enter name: ";
+                cin.getline(name, sizeof(name));
+                cout << "Enter phone number: ";
+                cin.getline(phone, sizeof(phone));
+                cout << "Enter birth date (day month year): ";
+                cin >> day >> month >> year;
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+                addSubscriber(name, phone, day, month, year);
+                break;
+            }
+
+            case 2: {
+                char name[100];
+                cout << "Enter subscriber name to delete: ";
+                cin.getline(name, sizeof(name));
+                deleteSubscriber(name);
+                break;
+            }
+
+            case 3: {
+                char name[100];
+                cout << "Enter subscriber name to find: ";
+                cin.getline(name, sizeof(name));
+                findSubscriber(name);
+                break;
+            }
+
+            case 4:
+                displayAll();
+                break;
+
+            case 5:
+                cout << "Exiting Phonebook." << endl;
+                return;
+
+            default:
+                cout << "Invalid choice. Try again." << endl;
+            }
+        }
+    }
+};
+
+int main() {
+    PhoneBook phoneBook;
+    phoneBook.interactiveMenu();
+    return 0;
+}

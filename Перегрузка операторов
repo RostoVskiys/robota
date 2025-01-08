@@ -1,0 +1,129 @@
+#include <iostream>
+using namespace std;
+
+class Fraction {
+private:
+    int numerator;
+    int denominator;
+
+    int gcd(int a, int b) {
+        if (a < 0) a = -a;
+        if (b < 0) b = -b;
+        while (b != 0) {
+            int temp = b;
+            b = a % b;
+            a = temp;
+        }
+        return a;
+    }
+
+    void simplify() {
+        int gcd_value = gcd(numerator, denominator);
+        numerator /= gcd_value;
+        denominator /= gcd_value;
+        if (denominator < 0) {
+            numerator = -numerator;
+            denominator = -denominator;
+        }
+    }
+
+public:
+    Fraction(int num = 0, int denom = 1) {
+        if (denom == 0) {
+            cout << "Error: Denominator cannot be zero.\n";
+            denom = 1;
+        }
+        numerator = num;
+        denominator = denom;
+        simplify();
+    }
+
+    bool inputFraction() {
+        cout << "Enter numerator: ";
+        cin >> numerator;
+        cout << "Enter denominator: ";
+        cin >> denominator;
+        if (denominator == 0) {
+            cout << "Error: Denominator cannot be zero.\n";
+            return false;
+        }
+        simplify();
+        return true;
+    }
+
+    Fraction operator+(const Fraction& other) const {
+        int num = numerator * other.denominator + other.numerator * denominator;
+        int denom = denominator * other.denominator;
+        return Fraction(num, denom);
+    }
+
+    Fraction operator-(const Fraction& other) const {
+        int num = numerator * other.denominator - other.numerator * denominator;
+        int denom = denominator * other.denominator;
+        return Fraction(num, denom);
+    }
+
+    Fraction operator*(const Fraction& other) const {
+        int num = numerator * other.numerator;
+        int denom = denominator * other.denominator;
+        return Fraction(num, denom);
+    }
+
+    Fraction operator/(const Fraction& other) const {
+        if (other.numerator == 0) {
+            cout << "Error: Division by a zero fraction.\n";
+            return Fraction(0, 1);
+        }
+        int num = numerator * other.denominator;
+        int denom = denominator * other.numerator;
+        return Fraction(num, denom);
+    }
+
+    void print() const {
+        if (denominator == 1) {
+            cout << numerator;
+        }
+        else {
+            cout << numerator << "/" << denominator;
+        }
+    }
+};
+
+int main() {
+    Fraction fraction1, fraction2;
+
+    cout << "Enter the first fraction:\n";
+    while (!fraction1.inputFraction()) {
+        cout << "Try again.\n";
+    }
+
+    cout << "Enter the second fraction:\n";
+    while (!fraction2.inputFraction()) {
+        cout << "Try again.\n";
+    }
+
+    cout << "\nFirst fraction: ";
+    fraction1.print();
+    cout << "\nSecond fraction: ";
+    fraction2.print();
+
+    Fraction result_add = fraction1 + fraction2;
+    cout << "\nAddition: ";
+    result_add.print();
+
+    Fraction result_sub = fraction1 - fraction2;
+    cout << "\nSubtraction: ";
+    result_sub.print();
+
+    Fraction result_mul = fraction1 * fraction2;
+    cout << "\nMultiplication: ";
+    result_mul.print();
+
+    Fraction result_div = fraction1 / fraction2;
+    cout << "\nDivision: ";
+    result_div.print();
+
+    cout << endl;
+
+    return 0;
+}

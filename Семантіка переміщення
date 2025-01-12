@@ -1,0 +1,170 @@
+#include <iostream>
+using namespace std;
+
+class MyString {
+private:
+    char* str;
+    int length;
+    static int cnt;
+
+public:
+    MyString() : length(80) {
+        str = new char[length + 1];
+        str[0] = '\0';
+        cnt++;
+    }
+
+    MyString(int len) : length(len) {
+        str = new char[length + 1];
+        str[0] = '\0';
+        cnt++;
+    }
+
+    MyString(const char* s) {
+        length = 0;
+        while (s[length] != '\0') length++;
+        str = new char[length + 1];
+        for (int i = 0; i < length; i++) str[i] = s[i];
+        str[length] = '\0';
+        cnt++;
+    }
+
+    ~MyString() {
+        delete[] str;
+        cnt--;
+    }
+
+    void MyInput() {
+        char t[1000];
+        cout << "Enter a string: ";
+        cin.getline(t, 1000);
+        length = 0;
+        while (t[length] != '\0') length++;
+        str = new char[length + 1];
+        for (int i = 0; i < length; i++) str[i] = t[i];
+        str[length] = '\0';
+    }
+
+    void MyOutput() const {
+        cout << str << endl;
+    }
+
+    void MyStrcpy(MyString& obj) {
+        delete[] str;
+        length = obj.length;
+        str = new char[length + 1];
+        for (int i = 0; i < length; i++) str[i] = obj.str[i];
+        str[length] = '\0';
+    }
+
+    bool MyStrStr(const char* sub) {
+        int subLen = 0;
+        while (sub[subLen] != '\0') subLen++;
+
+        for (int i = 0; i <= length - subLen; i++) {
+            bool match = true;
+            for (int j = 0; j < subLen; j++) {
+                if (str[i + j] != sub[j]) {
+                    match = false;
+                    break;
+                }
+            }
+            if (match) return true;
+        }
+        return false;
+    }
+
+    int MyChr(char c) {
+        for (int i = 0; i < length; i++) {
+            if (str[i] == c) return i;
+        }
+        return -1;
+    }
+
+    int MyStrLen() {
+        return length;
+    }
+
+    void MyStrCat(MyString& b) {
+        int newLen = length + b.length;
+        char* newStr = new char[newLen + 1];
+
+        for (int i = 0; i < length; i++) newStr[i] = str[i];
+        for (int i = 0; i < b.length; i++) newStr[length + i] = b.str[i];
+        newStr[newLen] = '\0';
+
+        delete[] str;
+        str = newStr;
+        length = newLen;
+    }
+
+    void MyDelChr(char c) {
+        int newLen = 0;
+        for (int i = 0; i < length; i++) {
+            if (str[i] != c) newLen++;
+        }
+
+        char* newStr = new char[newLen + 1];
+        int j = 0;
+        for (int i = 0; i < length; i++) {
+            if (str[i] != c) {
+                newStr[j++] = str[i];
+            }
+        }
+        newStr[newLen] = '\0';
+
+        delete[] str;
+        str = newStr;
+        length = newLen;
+    }
+
+    int MyStrCmp(MyString& b) {
+        int minLen = (length < b.length) ? length : b.length;
+        for (int i = 0; i < minLen; i++) {
+            if (str[i] < b.str[i]) return -1;
+            if (str[i] > b.str[i]) return 1;
+        }
+        if (length < b.length) return -1;
+        if (length > b.length) return 1;
+        return 0;
+    }
+
+    static int getCount() {
+        return cnt;
+    }
+};
+
+int MyString::cnt = 0;
+
+int main() {
+    MyString s1("Hello");
+    MyString s2("World");
+
+    s1.MyOutput();
+    s2.MyOutput();
+
+    MyString s3;
+    s3.MyStrcpy(s1);
+    s3.MyOutput();
+
+    s1.MyStrCat(s2);
+    s1.MyOutput();
+
+    int index = s1.MyChr('o');
+    cout << "Index of 'o': " << index << endl;
+
+    cout << "Length of s1: " << s1.MyStrLen() << endl;
+
+    bool found = s1.MyStrStr("ell");
+    cout << "Substring 'ell' found: " << (found ? "Yes" : "No") << endl;
+
+    s1.MyDelChr('o');
+    s1.MyOutput();
+
+    int cmp = s1.MyStrCmp(s2);
+    cout << "Comparison result: " << cmp << endl;
+
+    cout << "Number of MyString objects: " << MyString::getCount() << endl;
+
+    return 0;
+}

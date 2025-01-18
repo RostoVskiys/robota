@@ -1,0 +1,164 @@
+#include <iostream>
+using namespace std;
+
+template <typename T>
+class Arr {
+private:
+    T* d;  // Дані
+    int cap;  // Ємність
+    int g;  // Крок росту
+
+public:
+    Arr(int initCap = 0, int growBy = 1)
+        : cap(initCap), g(growBy) {
+        if (cap < 0 || g < 1) {
+            cout << "Invalid size or grow value!" << endl;
+            exit(1);
+        }
+        d = (cap > 0) ? new T[cap]() : nullptr;
+    }
+
+    ~Arr() {
+        delete[] d;
+    }
+
+    int size() const {
+        return cap;
+    }
+
+    void resize(int newCap, int growBy = 1) {
+        if (newCap < 0 || growBy < 1) {
+            cout << "Invalid size or grow value!" << endl;
+            exit(1);
+        }
+        T* newD = (newCap > 0) ? new T[newCap]() : nullptr;
+        int toCopy = (newCap < cap) ? newCap : cap;
+        for (int i = 0; i < toCopy; ++i) {
+            newD[i] = d[i];
+        }
+        delete[] d;
+        d = newD;
+        cap = newCap;
+        g = growBy;
+    }
+
+    int upper() const {
+        for (int i = cap - 1; i >= 0; --i) {
+            if (d[i] != T()) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    bool empty() const {
+        return upper() == -1;
+    }
+
+    void trim() {
+        int up = upper();
+        if (up + 1 < cap) {
+            resize(up + 1, g);
+        }
+    }
+
+    void clear() {
+        delete[] d;
+        d = nullptr;
+        cap = 0;
+    }
+
+    T get(int idx) const {
+        if (idx < 0 || idx >= cap) {
+            cout << "Index out of bounds!" << endl;
+            exit(1);
+        }
+        return d[idx];
+    }
+
+    void set(int idx, const T& val) {
+        if (idx < 0 || idx >= cap) {
+            cout << "Index out of bounds!" << endl;
+            exit(1);
+        }
+        d[idx] = val;
+    }
+
+    T& operator[](int idx) {
+        if (idx < 0 || idx >= cap) {
+            cout << "Index out of bounds!" << endl;
+            exit(1);
+        }
+        return d[idx];
+    }
+
+    void add(const T& val) {
+        int up = upper();
+        if (up + 1 >= cap) {
+            resize(cap + g, g);
+        }
+        d[up + 1] = val;
+    }
+
+    void append(const Arr<T>& other) {
+        for (int i = 0; i < other.cap; ++i) {
+            if (other.d[i] != T()) {
+                add(other.d[i]);
+            }
+        }
+    }
+
+    Arr<T>& operator=(const Arr<T>& other) {
+        if (this == &other) return *this;
+        delete[] d;
+        cap = other.cap;
+        g = other.g;
+        d = (cap > 0) ? new T[cap]() : nullptr;
+        for (int i = 0; i < cap; ++i) {
+            d[i] = other.d[i];
+        }
+        return *this;
+    }
+
+    T* data() const {
+        return d;
+    }
+
+    void insert(int idx, const T& val) {
+        if (idx < 0 || idx > cap) {
+            cout << "Index out of bounds!" << endl;
+            exit(1);
+        }
+        if (cap == 0 || upper() + 1 >= cap) {
+            resize(cap + g, g);
+        }
+        for (int i = cap - 1; i > idx; --i) {
+            d[i] = d[i - 1];
+        }
+        d[idx] = val;
+    }
+
+    void remove(int idx) {
+        if (idx < 0 || idx >= cap) {
+            cout << "Index out of bounds!" << endl;
+            exit(1);
+        }
+        for (int i = idx; i < cap - 1; ++i) {
+            d[i] = d[i + 1];
+        }
+        d[cap - 1] = T();
+    }
+};
+
+int main() {
+    Arr<int> arr(5, 2);
+    arr.add(10);
+    arr.add(20);
+    arr.add(30);
+    cout << "Size: " << arr.size() << endl;
+    cout << "Upper bound: " << arr.upper() << endl;
+    cout << "Element at index 1: " << arr[1] << endl;
+    arr.remove(1);
+    cout << "After removing index 1: " << arr[1] << endl;
+    return 0;
+}

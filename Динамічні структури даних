@@ -1,0 +1,60 @@
+#include <iostream>
+using namespace std;
+
+class Q {
+    int* d;
+    int f, r, c, N;
+
+public:
+    Q(int size) : f(0), r(-1), c(0), N(size) {
+        d = new int[N];
+    }
+
+    ~Q() {
+        delete[] d;
+    }
+
+    bool IsEmpty() { return c == 0; }
+    bool IsFull() { return c == N; }
+
+    void Enqueue(int v) {
+        if (!IsFull()) {
+            r = (r + 1) % N;
+            d[r] = v;
+            c++;
+        }
+    }
+
+    int Dequeue() {
+        if (!IsEmpty()) {
+            int v = d[f];
+            f = (f + 1) % N;
+            c--;
+            return v;
+        }
+        return -1;
+    }
+
+    void Show() {
+        for (int i = 0; i < c; i++) {
+            cout << d[(f + i) % N] << " ";
+        }
+        cout << endl;
+    }
+};
+
+int main() {
+    Q q(5);
+    q.Enqueue(10);
+    q.Enqueue(20);
+    q.Enqueue(30);
+    q.Show();
+    q.Dequeue();
+    q.Show();
+    q.Enqueue(40);
+    q.Enqueue(50);
+    q.Enqueue(60);
+    q.Show();
+    q.Enqueue(70); 
+    return 0;
+}

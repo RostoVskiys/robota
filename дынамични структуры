@@ -1,0 +1,186 @@
+#include <iostream>
+using namespace std;
+
+class L {
+private:
+    struct N {
+        int d;
+        N* n;
+        N(int v, N* nxt = nullptr) : d(v), n(nxt) {}
+    };
+
+    N* h;
+    N* t;
+
+public:
+    L() : h(nullptr), t(nullptr) {}
+
+    ~L() {
+        DeleteAll();
+    }
+
+    void AddToHead(int v) {
+        N* nn = new N(v, h);
+        h = nn;
+        if (!t) {
+            t = h;
+        }
+    }
+
+    void AddToTail(int v) {
+        N* nn = new N(v);
+        if (t) {
+            t->n = nn;
+        }
+        else {
+            h = nn;
+        }
+        t = nn;
+    }
+
+    void DeleteFromHead() {
+        if (!h) return;
+        N* tmp = h;
+        h = h->n;
+        delete tmp;
+        if (!h) {
+            t = nullptr;
+        }
+    }
+
+    void DeleteFromTail() {
+        if (!h) return;
+        if (h == t) {
+            delete h;
+            h = t = nullptr;
+        }
+        else {
+            N* cur = h;
+            while (cur->n != t) {
+                cur = cur->n;
+            }
+            delete t;
+            t = cur;
+            t->n = nullptr;
+        }
+    }
+
+    void DeleteAll() {
+        while (h) {
+            DeleteFromHead();
+        }
+    }
+
+    void Show() const {
+        N* cur = h;
+        while (cur) {
+            cout << cur->d << " ";
+            cur = cur->n;
+        }
+        cout << endl;
+    }
+
+    void InsertAt(int pos, int v) {
+        if (pos < 0) return;
+        if (pos == 0) {
+            AddToHead(v);
+            return;
+        }
+        N* cur = h;
+        for (int i = 0; i < pos - 1 && cur; ++i) {
+            cur = cur->n;
+        }
+        if (!cur) return;
+        N* nn = new N(v, cur->n);
+        cur->n = nn;
+        if (!nn->n) {
+            t = nn;
+        }
+    }
+
+    void DeleteAt(int pos) {
+        if (pos < 0 || !h) return;
+        if (pos == 0) {
+            DeleteFromHead();
+            return;
+        }
+        N* cur = h;
+        for (int i = 0; i < pos - 1 && cur->n; ++i) {
+            cur = cur->n;
+        }
+        if (!cur->n) return;
+        N* tmp = cur->n;
+        cur->n = tmp->n;
+        if (tmp == t) {
+            t = cur;
+        }
+        delete tmp;
+    }
+
+    int Search(int v) const {
+        N* cur = h;
+        int pos = 0;
+        while (cur) {
+            if (cur->d == v) {
+                return pos;
+            }
+            cur = cur->n;
+            ++pos;
+        }
+        return -1;
+    }
+
+    int Replace(int oldV, int newV) {
+        N* cur = h;
+        int cnt = 0;
+        while (cur) {
+            if (cur->d == oldV) {
+                cur->d = newV;
+                ++cnt;
+            }
+            cur = cur->n;
+        }
+        return cnt > 0 ? cnt : -1;
+    }
+
+    void Reverse() {
+        N* prev = nullptr;
+        N* cur = h;
+        t = h;
+        while (cur) {
+            N* nxt = cur->n;
+            cur->n = prev;
+            prev = cur;
+            cur = nxt;
+        }
+        h = prev;
+    }
+};
+
+int main() {
+    L l;
+
+    l.AddToHead(3);
+    l.AddToTail(5);
+    l.AddToTail(7);
+    l.Show();
+
+    l.InsertAt(1, 4);
+    l.Show();
+
+    l.DeleteAt(2);
+    l.Show();
+
+    cout << "Position of 5: " << l.Search(5) << endl;
+
+    l.Replace(5, 10);
+    l.Show();
+
+    l.Reverse();
+    l.Show();
+
+    l.DeleteAll();
+    l.Show();
+
+    return 0;
+}

@@ -1,0 +1,52 @@
+#include <iostream>
+
+using namespace std;
+
+double sqrtA(double n) {
+    if (n <= 0) return 0;
+    double x = n, y = 1, e = 0.00001;
+    while (x - y > e) {
+        x = (x + y) / 2;
+        y = n / x;
+    }
+    return x;
+}
+
+class Eq {
+public:
+    virtual void solve() const = 0;
+    virtual ~Eq() {}
+};
+
+class LinEq : public Eq {
+private:
+    double a, b;
+public:
+    LinEq(double a, double b) : a(a), b(b) {}
+    void solve() const override {
+        if (a == 0) cout << (b == 0 ? "Infinite solutions  \n" : "No solutions  \n");
+        else cout << "Solution  x = " << -b / a << "\n";
+    }
+};
+
+class QuadEq : public Eq {
+private:
+    double a, b, c;
+public:
+    QuadEq(double a, double b, double c) : a(a), b(b), c(c) {}
+    void solve() const override {
+        if (a == 0) { LinEq(b, c).solve(); return; }
+        double D = b * b - 4 * a * c;
+        if (D > 0) cout << "Roots  x1 = " << (-b + sqrtA(D)) / (2 * a) << "  x2 = " << (-b - sqrtA(D)) / (2 * a) << "\n";
+        else if (D == 0) cout << "One root  x = " << -b / (2 * a) << "\n";
+        else cout << "No real solutions (complex roots)  \n";
+    }
+};
+
+int main() {
+    LinEq e1(2, -4);
+    QuadEq e2(1, -3, 2);
+    e1.solve();
+    e2.solve();
+    return 0;
+}

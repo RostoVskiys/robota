@@ -1,0 +1,90 @@
+#include <iostream>
+using namespace std;
+
+class Employer {
+public:
+    virtual void Print() = 0;
+    virtual ~Employer() {}
+};
+
+class President : public Employer {
+public:
+    void Print() override {
+        cout << "President" << endl;
+    }
+};
+
+class Manager : public Employer {
+public:
+    void Print() override {
+        cout << "Manager" << endl;
+    }
+};
+
+class Worker : public Employer {
+public:
+    void Print() override {
+        cout << "Worker" << endl;
+    }
+};
+
+class Shape {
+public:
+    virtual double Area() = 0;
+    virtual ~Shape() {}
+};
+
+class Rect : public Shape {
+private:
+    double w, h;
+public:
+    Rect(double w, double h) : w(w), h(h) {}
+    double Area() override {
+        return w * h;
+    }
+};
+
+class Circle : public Shape {
+private:
+    double r;
+public:
+    Circle(double r) : r(r) {}
+    double Area() override {
+        return 3.14159 * r * r;
+    }
+};
+
+class Tri : public Shape {
+private:
+    double b, h;
+public:
+    Tri(double b, double h) : b(b), h(h) {}
+    double Area() override {
+        return 0.5 * b * h;
+    }
+};
+
+class Trap : public Shape {
+private:
+    double a, b, h;
+public:
+    Trap(double a, double b, double h) : a(a), b(b), h(h) {}
+    double Area() override {
+        return 0.5 * (a + b) * h;
+    }
+};
+
+int main() {
+    Employer* e[3] = { new President(), new Manager(), new Worker() };
+    for (int i = 0; i < 3; ++i) e[i]->Print();
+
+    Shape* s[4] = { new Rect(5, 10), new Circle(7), new Tri(3, 6), new Trap(5, 8, 4) };
+    for (int i = 0; i < 4; ++i) {
+        cout << "Area: " << s[i]->Area() << endl;
+    }
+
+    for (int i = 0; i < 3; ++i) delete e[i];
+    for (int i = 0; i < 4; ++i) delete s[i];
+
+    return 0;
+}

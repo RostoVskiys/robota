@@ -1,0 +1,95 @@
+#include <iostream>
+using namespace std;
+
+class Client {
+public:
+    char n[100];
+    char acc[20];
+    double bal;
+
+    Client() : bal(0.0) {}
+    Client(const char* name, const char* account, double balance)
+        : bal(balance) {
+        int i = 0;
+        while (name[i] != '\0' && i < sizeof(n) - 1) {
+            n[i] = name[i];
+            i++;
+        }
+        n[i] = '\0';
+
+        i = 0;
+        while (account[i] != '\0' && i < sizeof(acc) - 1) {
+            acc[i] = account[i];
+            i++;
+        }
+        acc[i] = '\0';
+    }
+};
+
+class ClMgr {
+public:
+    static void saveClients(Client cl[], int sz, const char* fn) {
+        FILE* f;
+        fopen_s(&f, fn, "wb");
+        if (!f) return;
+        fwrite(&sz, sizeof(int), 1, f);
+        for (int i = 0; i < sz; i++) {
+            int ns = 0;
+            while (cl[i].n[ns] != '\0') ns++;
+            fwrite(&ns, sizeof(int), 1, f);
+            fwrite(cl[i].n, sizeof(char), ns, f);
+
+            int as = 0;
+            while (cl[i].acc[as] != '\0') as++;
+            fwrite(&as, sizeof(int), 1, f);
+            fwrite(cl[i].acc, sizeof(char), as, f);
+
+            fwrite(&cl[i].bal, sizeof(double), 1, f);
+        }
+        fclose(f);
+    }
+
+    static Client* loadClients(int& sz, const char* fn) {
+        FILE* f;
+        fopen_s(&f, fn, "rb");
+        if (!f) return nullptr;
+        fread(&sz, sizeof(int), 1, f);
+        Client* cl = new Client[sz];
+        for (int i = 0; i < sz; i++) {
+            int ns;
+            fread(&ns, sizeof(int), 1, f);
+            fread(cl[i].n, sizeof(char), ns, f);
+            cl[i].n[ns] = '\0';
+
+            int as;
+            fread(&as, sizeof(int), 1, f);
+            fread(cl[i].acc, sizeof(char), as, f);
+            cl[i].acc[as] = '\0';
+
+            fread(&cl[i].bal, sizeof(double), 1, f);
+        }
+        fclose(f);
+        return cl;
+    }
+};
+
+int main() {
+    Client cl[] = {
+        {"John Doe", "12345678", 1000.50},
+        {"Jane Smith", "87654321", 2500.75},
+        {"Alice Brown", "11223344", 320.10}
+    };
+    int sz = 3;
+    const char* fn = "clients.dat";
+
+    ClMgr::saveClients(cl, sz, fn);
+
+    int lsz;
+    Client* lcl = ClMgr::loadClients(lsz, fn);
+    for (int i = 0; i < lsz; i++) {
+        cout << "Name: " << lcl[i].n << ", Account: " << lcl[i].acc << ", Balance: " << lcl[i].bal << endl;
+    }
+
+    delete[] lcl;
+    return 0;
+}

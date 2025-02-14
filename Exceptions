@@ -1,44 +1,44 @@
 #include <iostream>
 using namespace std;
 
-class Item {
+class Itm {
 public:
-    string name;
-    double price;
-    int quantity;
-    static int stock;
+    string nm;
+    double pr;
+    int qt;
+    static int stk;
 
-    Item(string _name, double _price, int _quantity) {
-        if (_price <= 0) {
+    Itm(string n, double p, int q) {
+        if (p <= 0) {
             cout << "Price must be positive!" << endl;
             return;
         }
-        if (_quantity > stock) {
+        if (q > stk) {
             cout << "Not enough stock available!" << endl;
             return;
         }
-        name = _name;
-        price = _price;
-        quantity = _quantity;
-        stock -= _quantity;
+        nm = n;
+        pr = p;
+        qt = q;
+        stk = stk - q;
     }
 
-    void show() {
-        cout << "Item: " << name << ", Price: " << price << ", Quantity: " << quantity << endl;
+    void shw() {
+        cout << "Item: " << nm << ", Price: " << pr << ", Quantity: " << qt << endl;
     }
 };
 
-int Item::stock = 10;
+int Itm::stk = 10;
 
 int main() {
-    Item cart[] = {
-        Item("Laptop", 15000.50, 2),
-        Item("Mouse", 500, 5),
-        Item("Keyboard", 1200, 3)
+    Itm crt[] = {
+        Itm("Lap", 15000.50, 2),
+        Itm("Mse", 500, 5),
+        Itm("Kbd", 1200, 3)
     };
 
     for (int i = 0; i < 3; i++) {
-        cart[i].show();
+        crt[i].shw();
     }
     return 0;
 }

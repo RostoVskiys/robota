@@ -1,0 +1,60 @@
+#include <iostream>
+using namespace std;
+
+class Ph {
+protected:
+    const char* m;
+    double p;
+public:
+    Ph(const char* mod, double pr) : m(mod), p(pr) {}
+    virtual ~Ph() {}
+    double getP() const { return p; }
+    virtual void show() const {
+        cout << "Model: " << m << ", Price: " << p << "\n";
+    }
+};
+
+class BtnPh : public Ph {
+public:
+    BtnPh(const char* mod, double pr) : Ph(mod, pr) {}
+    void show() const override {
+        cout << "BtnPh - ";
+        Ph::show();
+    }
+};
+
+class SmPh : public Ph {
+public:
+    SmPh(const char* mod, double pr) : Ph(mod, pr) {}
+    void show() const override {
+        cout << "SmPh - ";
+        Ph::show();
+    }
+};
+
+int main() {
+    Ph* ph[] = {
+        new BtnPh("Nokia 3310", 50),
+        new SmPh("iPhone 15", 1200),
+        new SmPh("Samsung S23", 1000),
+        new BtnPh("Alcatel 2000", 40),
+        new SmPh("Xiaomi Mi 11", 800)
+    };
+
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4 - i; j++) {
+            if (ph[j]->getP() > ph[j + 1]->getP()) {
+                swap(ph[j], ph[j + 1]);
+            }
+        }
+    }
+
+    for (auto& x : ph) {
+        x->show();
+    }
+
+    for (auto& x : ph) {
+        delete x;
+    }
+    return 0;
+}

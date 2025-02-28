@@ -1,0 +1,104 @@
+#include <iostream>
+using namespace std;
+
+class FileManager {
+private:
+    char files[10][50];
+    int fileCount = 0;
+
+public:
+    void listFiles() {
+        if (fileCount == 0) {
+            cout << "No files." << endl;
+        }
+        else {
+            for (int i = 0; i < fileCount; i++) {
+                cout << files[i] << endl;
+            }
+        }
+    }
+
+    void createFile(const char filename[]) {
+        if (fileCount < 10) {
+            strncpy(files[fileCount], filename, 49);
+            files[fileCount][49] = '\0';
+            fileCount++;
+            cout << "File " << filename << " created successfully!" << endl;
+        }
+        else {
+            cerr << "Error: File limit reached!" << endl;
+        }
+    }
+
+    void deleteFile(const char filename[]) {
+        bool found = false;
+        for (int i = 0; i < fileCount; i++) {
+            if (strcmp(files[i], filename) == 0) {
+                for (int j = i; j < fileCount - 1; j++) {
+                    strcpy(files[j], files[j + 1]);
+                }
+                fileCount--;
+                cout << "File " << filename << " deleted!" << endl;
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            cerr << "Error: File not found!" << endl;
+        }
+    }
+
+    void readFile(const char filename[]) {
+        bool found = false;
+        for (int i = 0; i < fileCount; i++) {
+            if (strcmp(files[i], filename) == 0) {
+                cout << "Contents of file " << filename << " (virtually)." << endl;
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            cerr << "Error: File not found!" << endl;
+        }
+    }
+};
+
+int main() {
+    FileManager manager;
+    int choice;
+    char filename[50];
+
+    do {
+        cout << "1. List files\n2. Create file\n3. Delete file\n4. Read file\n0. Exit\nChoose action: ";
+        cin >> choice;
+        cin.ignore();
+
+        switch (choice) {
+        case 1:
+            manager.listFiles();
+            break;
+        case 2:
+            cout << "Enter filename: ";
+            cin.getline(filename, 50);
+            manager.createFile(filename);
+            break;
+        case 3:
+            cout << "Enter filename: ";
+            cin.getline(filename, 50);
+            manager.deleteFile(filename);
+            break;
+        case 4:
+            cout << "Enter filename: ";
+            cin.getline(filename, 50);
+            manager.readFile(filename);
+            break;
+        case 0:
+            cout << "Exiting..." << endl;
+            break;
+        default:
+            cerr << "Invalid choice!" << endl;
+        }
+    } while (choice != 0);
+
+    return 0;
+}

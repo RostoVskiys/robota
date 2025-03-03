@@ -1,0 +1,59 @@
+#include <iostream>
+
+class Shp {
+public:
+    virtual double Ar() const = 0;
+    virtual ~Shp() {}
+};
+
+class Rec : public Shp {
+    double wid, hei;
+public:
+    Rec(double w, double h) : wid(w), hei(h) {}
+    double Ar() const override {
+        return wid * hei;
+    }
+};
+
+class Cir : public Shp {
+    double rad;
+public:
+    Cir(double r) : rad(r) {}
+    double Ar() const override {
+        return 3.14159 * rad * rad;
+    }
+};
+
+class Tri : public Shp {
+    double bas, hei;
+public:
+    Tri(double b, double h) : bas(b), hei(h) {}
+    double Ar() const override {
+        return 0.5 * bas * hei;
+    }
+};
+
+class Trp : public Shp {
+    double b1, b2, hei;
+public:
+    Trp(double x, double y, double h) : b1(x), b2(y), hei(h) {}
+    double Ar() const override {
+        return 0.5 * (b1 + b2) * hei;
+    }
+};
+
+int main() {
+    Shp* shp[] = {
+        new Rec(4, 5),
+        new Cir(3),
+        new Tri(6, 4),
+        new Trp(3, 5, 4)
+    };
+
+    for (int i = 0; i < 4; i++) {
+        std::cout << "Shp " << i + 1 << " Ar: " << shp[i]->Ar() << std::endl;
+        delete shp[i];
+    }
+
+    return 0;
+}

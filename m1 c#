@@ -1,0 +1,107 @@
+using System;
+
+class Program
+{
+    static void Main()
+    {
+        T1();
+        T2();
+        T3();
+        T4();
+        T5();
+    }
+
+    static void T1()
+    {
+        Console.Write("enter a number (1-100)  ");
+        if (int.TryParse(Console.ReadLine(), out int num) && num >= 1 && num <= 100)
+        {
+            if (num % 3 == 0 && num % 5 == 0) Console.WriteLine("Fizz Buzz");
+            else if (num % 3 == 0) Console.WriteLine("Fizz");
+            else if (num % 5 == 0) Console.WriteLine("Buzz");
+            else Console.WriteLine(num);
+        }
+        else
+        {
+            Console.WriteLine("error  T1");
+        }
+    }
+
+    static void T2()
+    {
+        Console.Write("enter a value ");
+        if (double.TryParse(Console.ReadLine(), out double v))
+        {
+            Console.Write("enter a percentage ");
+            if (double.TryParse(Console.ReadLine(), out double p))
+            {
+                Console.WriteLine($"{p}% of {v} is {v * p / 100}");
+            }
+            else
+            {
+                Console.WriteLine("error T2");
+            }
+        }
+        else
+        {
+            Console.WriteLine("error T2");
+        }
+    }
+
+    static void T3()
+    {
+        Console.Write("enter four digits ");
+        string inp = Console.ReadLine();
+        if (inp.Length == 4 && int.TryParse(inp, out int res))
+        {
+            Console.WriteLine($"Formed number  {res}");
+        }
+        else
+        {
+            Console.WriteLine("error T3");
+        }
+    }
+
+    static void T4()
+    {
+        Console.Write("enter a six-digit number  ");
+        string num = Console.ReadLine();
+        if (num.Length == 6 && int.TryParse(num, out _))
+        {
+            Console.Write("enter first position (1-6): ");
+            int p1 = int.Parse(Console.ReadLine()) - 1;
+            Console.Write("enter second position (1-6): ");
+            int p2 = int.Parse(Console.ReadLine()) - 1;
+
+            char[] d = num.ToCharArray();
+            (d[p1], d[p2]) = (d[p2], d[p1]);
+
+            Console.WriteLine($"modified number  {new string(d)}");
+        }
+        else
+        {
+            Console.WriteLine("error T4");
+        }
+    }
+
+    static void T5()
+    {
+        Console.Write("enter a date (dd.MM.yyyy)  ");
+        if (DateTime.TryParse(Console.ReadLine(), out DateTime d))
+        {
+            string s = d.Month switch
+            {
+                12 or 1 or 2 => "Winter",
+                3 or 4 or 5 => "Spring",
+                6 or 7 or 8 => "Summer",
+                9 or 10 or 11 => "Autumn",
+                _ => "Unknown"
+            };
+            Console.WriteLine($"{s} {d.DayOfWeek}");
+        }
+        else
+        {
+            Console.WriteLine("error T5");
+        }
+    }
+}

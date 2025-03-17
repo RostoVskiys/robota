@@ -1,0 +1,70 @@
+using System;
+
+class Program
+{
+    static void PrintNums(int N)
+    {
+        for (int i = 1; i <= N; i++)
+            Console.WriteLine(i);
+    }
+
+    static void PerformOp(double n1, double n2, string op)
+    {
+        double res = 0;
+
+        if (op == "+") res = n1 + n2;
+        else if (op == "-") res = n1 - n2;
+        else if (op == "*") res = n1 * n2;
+        else if (op == "/")
+        {
+            if (n2 != 0) res = n1 / n2;
+            else Console.WriteLine("Деление на ноль невозможно!");
+        }
+        else Console.WriteLine("Неизвестная операция!");
+
+        if (op == "+" || op == "-" || op == "*" || (op == "/" && n2 != 0))
+            Console.WriteLine(res);
+    }
+
+    static void FindMax(int n1, int n2, int n3)
+    {
+        int max = n1;
+        if (n2 > max) max = n2;
+        if (n3 > max) max = n3;
+        Console.WriteLine(max);
+    }
+
+    static void SumEven(int N)
+    {
+        int sum = 0;
+        for (int i = 2; i <= N; i += 2)
+            sum += i;
+        Console.WriteLine(sum);
+    }
+
+    static void Main(string[] args)
+    {
+        Console.Write("Введите число N: ");
+        int N = Convert.ToInt32(Console.ReadLine());
+        PrintNums(N);
+
+        Console.Write("Введите первое число: ");
+        double n1 = Convert.ToDouble(Console.ReadLine());
+        Console.Write("Введите второе число: ");
+        double n2 = Convert.ToDouble(Console.ReadLine());
+        Console.Write("Введите операцию (+, -, *, /): ");
+        string op = Console.ReadLine();
+        PerformOp(n1, n2, op);
+
+        Console.Write("Введите три числа через пробел: ");
+        string[] inputs = Console.ReadLine().Split(' ');
+        int n3 = Convert.ToInt32(inputs[0]);
+        int n4 = Convert.ToInt32(inputs[1]);
+        int n5 = Convert.ToInt32(inputs[2]);
+        FindMax(n3, n4, n5);
+
+        Console.Write("Введите число N для суммы четных чисел: ");
+        int N2 = Convert.ToInt32(Console.ReadLine());
+        SumEven(N2);
+    }
+}

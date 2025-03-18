@@ -7,7 +7,9 @@ class student
     public int otchestvo { get; set; }
     public int gruppa { get; set; }
     public int vozrast { get; set; }
-    private int[][] ocenki;
+    private int[] progOcenki;
+    private int[] adminOcenki;
+    private int[] designOcenki;
 
     public student(int familia, int imya, int otchestvo, int gruppa, int vozrast)
     {
@@ -16,46 +18,86 @@ class student
         this.otchestvo = otchestvo;
         this.gruppa = gruppa;
         this.vozrast = vozrast;
-        ocenki = new int[3][];
-        ocenki[0] = new int[0];
-        ocenki[1] = new int[0];
-        ocenki[2] = new int[0];
+        progOcenki = new int[0];
+        adminOcenki = new int[0];
+        designOcenki = new int[0];
     }
 
     public void dobavitOcenku(int predmet, int ocenka)
     {
-        if (predmet < 0 || predmet >= ocenki.Length)
+        if (predmet == 0)
+        {
+            progOcenki = AddGrade(progOcenki, ocenka);
+        }
+        else if (predmet == 1)
+        {
+            adminOcenki = AddGrade(adminOcenki, ocenka);
+        }
+        else if (predmet == 2)
+        {
+            designOcenki = AddGrade(designOcenki, ocenka);
+        }
+        else
         {
             Console.WriteLine("неверный индекс предмета ");
-            return;
         }
-        Array.Resize(ref ocenki[predmet], ocenki[predmet].Length + 1);
-        ocenki[predmet][ocenki[predmet].Length - 1] = ocenka;
+    }
+
+    private int[] AddGrade(int[] ocenkiArray, int ocenka)
+    {
+        int[] newOcenki = new int[ocenkiArray.Length + 1];
+        for (int i = 0; i < ocenkiArray.Length; i++)
+        {
+            newOcenki[i] = ocenkiArray[i];
+        }
+        newOcenki[ocenkiArray.Length] = ocenka;
+        return newOcenki;
     }
 
     public double sredniyBall(int predmet)
     {
-        if (predmet < 0 || predmet >= ocenki.Length || ocenki[predmet].Length == 0)
+        int[] ocenkiArray = (predmet == 0) ? progOcenki :
+                            (predmet == 1) ? adminOcenki :
+                            designOcenki;
+
+        if (ocenkiArray.Length == 0)
         {
-            Console.WriteLine("неверный индекс предмета или нет оценок ");
+            Console.WriteLine("нет оценок ");
             return 0;
         }
 
         int sum = 0;
-        foreach (var ocenka in ocenki[predmet])
+        foreach (var ocenka in ocenkiArray)
         {
             sum += ocenka;
         }
 
-        return (double)sum / ocenki[predmet].Length;
+        return (double)sum / ocenkiArray.Length;
     }
 
     public void pechat()
     {
-        Console.WriteLine("студент  " + familia + " " + imya + " " + otchestvo + ", группа: " + gruppa + ", возраст  " + vozrast);
-        Console.WriteLine("оценки по программированию  " + string.Join(", ", ocenki[0]));
-        Console.WriteLine("оценки по администрированию  " + string.Join(", ", ocenki[1]));
-        Console.WriteLine("оценки по дизайну  " + string.Join(", ", ocenki[2]));
+        Console.WriteLine("студент (водить цыфры) " + familia + " " + imya + " " + otchestvo + ", группа " + gruppa + ", возраст " + vozrast);
+        Console.WriteLine("оценки по программированию: " + progOcenki.Length);
+        foreach (var ocenka in progOcenki)
+        {
+            Console.Write(ocenka + " ");
+        }
+        Console.WriteLine();
+
+        Console.WriteLine("оценки по администрированию " + adminOcenki.Length);
+        foreach (var ocenka in adminOcenki)
+        {
+            Console.Write(ocenka + " ");
+        }
+        Console.WriteLine();
+
+        Console.WriteLine("оценки по дизайну " + designOcenki.Length);
+        foreach (var ocenka in designOcenki)
+        {
+            Console.Write(ocenka + " ");
+        }
+        Console.WriteLine();
     }
 }
 
@@ -63,50 +105,50 @@ class programma
 {
     static void Main()
     {
-        Console.Write("введите фамилию студента число  ");
+        Console.Write("введите фамилию студента ");
         int familia = int.Parse(Console.ReadLine());
 
-        Console.Write("введите имя студента число ");
+        Console.Write("введите имя студента ");
         int imya = int.Parse(Console.ReadLine());
 
-        Console.Write("введите отчество студента число  ");
+        Console.Write("введите отчество студента ");
         int otchestvo = int.Parse(Console.ReadLine());
 
-        Console.Write("введите номер группы  ");
+        Console.Write("введите номер группы ");
         int gruppa = int.Parse(Console.ReadLine());
 
-        Console.Write("введите возраст студента  ");
+        Console.Write("введите возраст студента ");
         int vozrast = int.Parse(Console.ReadLine());
 
         student stud = new student(familia, imya, otchestvo, gruppa, vozrast);
 
-        Console.WriteLine("введите оценки для студента ");
+        Console.WriteLine("введите оценки для студента");
 
-        Console.WriteLine("оценки по программированию ");
+        Console.WriteLine("оценки по программированию");
         while (true)
         {
-            Console.Write("введите оценку по программированию или q для завершения ");
-            string input = Console.ReadLine();
-            if (input.ToLower() == "q") break;
-            stud.dobavitOcenku(0, int.Parse(input));
+            Console.Write("введите оценку по программированию или 0 для завершения ");
+            int input = int.Parse(Console.ReadLine());
+            if (input == 0) break;
+            stud.dobavitOcenku(0, input);
         }
 
-        Console.WriteLine("оценки по администрированию:");
+        Console.WriteLine("оценки по администрированию ");
         while (true)
         {
-            Console.Write("введите оценку по администрированию или q для завершения ");
-            string input = Console.ReadLine();
-            if (input.ToLower() == "q") break;
-            stud.dobavitOcenku(1, int.Parse(input));
+            Console.Write("введите оценку по администрированию или 0 для завершения ");
+            int input = int.Parse(Console.ReadLine());
+            if (input == 0) break;
+            stud.dobavitOcenku(1, input);
         }
 
-        Console.WriteLine("оценки по дизайну:");
+        Console.WriteLine("оценки по дизайну ");
         while (true)
         {
-            Console.Write("введите оценку по дизайну или q для завершения ");
-            string input = Console.ReadLine();
-            if (input.ToLower() == "q") break;
-            stud.dobavitOcenku(2, int.Parse(input));
+            Console.Write("введите оценку по дизайну или 0 для завершения ");
+            int input = int.Parse(Console.ReadLine());
+            if (input == 0) break;
+            stud.dobavitOcenku(2, input);
         }
 
         stud.pechat();

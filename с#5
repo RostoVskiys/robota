@@ -1,0 +1,58 @@
+using System;
+
+public struct DR
+{
+    private DateTime bDate;
+
+    public void SetBD(int d, int m, int y)
+    {
+        bDate = new DateTime(y, m, d);
+    }
+
+    public DayOfWeek GetDOW()
+    {
+        return bDate.DayOfWeek;
+    }
+
+    public DayOfWeek GetDOWInY(int y)
+    {
+        DateTime tDate = new DateTime(y, bDate.Month, bDate.Day);
+        return tDate.DayOfWeek;
+    }
+
+    public int DtnBD()
+    {
+        DateTime today = DateTime.Today;
+        DateTime nextBD = new DateTime(today.Year, bDate.Month, bDate.Day);
+
+        if (today > nextBD)
+        {
+            nextBD = nextBD.AddYears(1);
+        }
+
+        return (nextBD - today).Days;
+    }
+}
+
+class Program
+{
+    static void Main()
+    {
+        DR myBD = new DR();
+
+        Console.Write("Введите день рождения: ");
+        int day = int.Parse(Console.ReadLine());
+
+        Console.Write("Введите месяц рождения: ");
+        int month = int.Parse(Console.ReadLine());
+
+        Console.Write("Введите год рождения: ");
+        int year = int.Parse(Console.ReadLine());
+
+        myBD.SetBD(day, month, year);
+
+        Console.WriteLine("День недели в день рождения: " + myBD.GetDOW());
+        Console.WriteLine("День недели в день рождения в 2025 году: " + myBD.GetDOWInY(2025));
+        Console.WriteLine("Дней до следующего дня рождения: " + myBD.DtnBD());
+    }
+}

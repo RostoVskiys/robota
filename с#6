@@ -1,0 +1,89 @@
+using System;
+
+class Produkt
+{
+    public char Title { get; set; }  
+    private int stock;
+    private double cost;
+
+    public int Stock
+    {
+        get => stock;
+        set => stock = value < 0 ? 0 : value;
+    }
+
+    public double Cost
+    {
+        get => cost;
+        set => cost = value < 0 ? 0 : value;
+    }
+
+    public Produkt(char title, int stock, double cost)
+    {
+        Title = title;
+        Stock = stock;
+        Cost = cost;
+    }
+
+    public static Produkt operator +(Produkt p, int quantity)
+    {
+        p.Stock += quantity;
+        return p;
+    }
+
+    public static Produkt operator -(Produkt p, int quantity)
+    {
+        if (p.Stock - quantity < 0)
+            Console.WriteLine("товар не может быть ниже нуля ");
+        else
+            p.Stock -= quantity;
+        return p;
+    }
+    
+    public static bool operator ==(Produkt p1, Produkt p2) => p1.Cost == p2.Cost;
+    public static bool operator !=(Produkt p1, Produkt p2) => p1.Cost != p2.Cost;
+    public static bool operator >(Produkt p1, Produkt p2) => p1.Stock > p2.Stock;
+    public static bool operator <(Produkt p1, Produkt p2) => p1.Stock < p2.Stock;
+
+    public void ShowInfo() => Console.WriteLine("продукт {Title}, количество {Stock}, цена {Cost} руб");
+}
+
+class Program
+{
+    static void Main()
+    {
+        Console.WriteLine("товар 1");
+        Console.Write("продукт  ");
+        char title1 = Console.ReadKey().KeyChar;
+        Console.WriteLine();
+        Console.Write("количество ");
+        int stock1 = int.Parse(Console.ReadLine());
+        Console.Write("цена ");
+        double cost1 = double.Parse(Console.ReadLine());
+
+        Produkt produkt1 = new Produkt(title1, stock1, cost1);
+
+        Console.WriteLine("товар 2");
+        Console.Write("товар : ");
+        char title2 = Console.ReadKey().KeyChar;
+        Console.WriteLine();
+        Console.Write("количество ");
+        int stock2 = int.Parse(Console.ReadLine());
+        Console.Write("цена ");
+        double cost2 = double.Parse(Console.ReadLine());
+
+        Produkt produkt2 = new Produkt(title2, stock2, cost2);
+
+        produkt1.ShowInfo();
+        produkt2.ShowInfo();
+
+        produkt1 = produkt1 + 20;
+        produkt1.ShowInfo();
+
+        produkt2 = produkt2 - 5;
+        produkt2.ShowInfo();
+
+        Console.WriteLine("продукты имеют одинаковую цену " + (produkt1 == produkt2));
+        Console.WriteLine("продукт 1 больше чем продукт 2 " + (produkt1 > produkt2));
+    }
+}

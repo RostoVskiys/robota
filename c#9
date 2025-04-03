@@ -1,0 +1,81 @@
+using System;
+
+interface ICalc
+{
+    int Less(int valC);
+    int Greater(int valC);
+}
+
+interface IOutput2
+{
+    void ShowEven();
+    void ShowOdd();
+}
+
+class ArrayClass : ICalc, IOutput2
+{
+    private int[] arr;
+
+    public ArrayClass(int[] arr)
+    {
+        this.arr = arr;
+    }
+
+    public int Less(int valC)
+    {
+        int count = 0;
+        foreach (int n in arr)
+            if (n < valC) count++;
+        return count;
+    }
+
+    public int Greater(int valC)
+    {
+        int count = 0;
+        foreach (int n in arr)
+            if (n > valC) count++;
+        return count;
+    }
+
+    public void ShowEven()
+    {
+        foreach (int n in arr)
+            if (n % 2 == 0) Console.Write(n + " ");
+        Console.WriteLine();
+    }
+
+    public void ShowOdd()
+    {
+        foreach (int n in arr)
+            if (n % 2 != 0) Console.Write(n + " ");
+        Console.WriteLine();
+    }
+}
+
+class Program
+{
+    static void Main()
+    {
+        Console.Write("Введите количество элементов массива: ");
+        int size = int.Parse(Console.ReadLine());
+        int[] data = new int[size];
+
+        Console.WriteLine("Введите элементы массива:");
+        for (int i = 0; i < size; i++)
+            data[i] = int.Parse(Console.ReadLine());
+
+        ArrayClass obj = new ArrayClass(data);
+
+        Console.Write("Введите число для сравнения: ");
+        int valC = int.Parse(Console.ReadLine());
+
+        Console.WriteLine("Количество элементов меньше " + valC + ": " + obj.Less(valC));
+        Console.WriteLine("Количество элементов больше " + valC + ": " + obj.Greater(valC));
+
+        Console.Write("Четные элементы: ");
+        obj.ShowEven();
+
+        Console.Write("Нечетные элементы: ");
+        obj.ShowOdd();
+    }
+}

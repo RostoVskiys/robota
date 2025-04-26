@@ -1,0 +1,125 @@
+using System;
+
+namespace TaskSolution
+{
+    public static class StringExtensions
+    {
+        public static bool IsPalindrome(this string str)
+        {
+            if (str == null) return false;
+            string cl = str.Replace(" ", "").ToLower();
+            char[] arr = cl.ToCharArray();
+            Array.Reverse(arr);
+            string rev = new string(arr);
+            return cl == rev;
+        }
+
+        public static int WordCount(this string str)
+        {
+            if (string.IsNullOrWhiteSpace(str)) return 0;
+            return str.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).Length;
+        }
+
+        public static string Truncate(this string str, int len)
+        {
+            if (str == null) return null;
+            if (str.Length <= len) return str;
+            return str.Substring(0, len) + "...";
+        }
+    }
+
+    public static class IntExtensions
+    {
+        public static bool IsEven(this int num)
+        {
+            return num % 2 == 0;
+        }
+    }
+
+    public class Button
+    {
+        public event Action OnClick;
+
+        public void Click()
+        {
+            Console.WriteLine("Кнопка нажата!");
+            OnClick?.Invoke();
+        }
+    }
+
+    public class Temperature
+    {
+        private double _val;
+
+        public event Action<double> OnTemperatureChanged;
+
+        public double Value
+        {
+            get => _val;
+            set
+            {
+                if (_val != value)
+                {
+                    _val = value;
+                    OnTemperatureChanged?.Invoke(_val);
+                }
+            }
+        }
+    }
+
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Console.WriteLine("Введите строку для проверки палиндрома:");
+            string pl = Console.ReadLine();
+            Console.WriteLine($"Палиндром: {pl.IsPalindrome()}");
+
+            Console.WriteLine("Введите строку для подсчёта слов:");
+            string wc = Console.ReadLine();
+            Console.WriteLine($"Количество слов: {wc.WordCount()}");
+
+            Console.WriteLine("Введите число для проверки на чётность:");
+            if (int.TryParse(Console.ReadLine(), out int num))
+            {
+                Console.WriteLine($"Чётное: {num.IsEven()}");
+            }
+            else
+            {
+                Console.WriteLine("Ошибка: введено не число!");
+            }
+
+            Console.WriteLine("Введите строку для обрезки:");
+            string tr = Console.ReadLine();
+            Console.WriteLine("Введите длину обрезки:");
+            if (int.TryParse(Console.ReadLine(), out int len))
+            {
+                Console.WriteLine($"Обрезка: {tr.Truncate(len)}");
+            }
+            else
+            {
+                Console.WriteLine("Ошибка: введено не число длины!");
+            }
+
+            Button btn = new Button();
+            btn.OnClick += () => Console.WriteLine("Событие обработано: кнопку нажали!");
+            Console.WriteLine("Нажмите Enter для нажатия кнопки...");
+            Console.ReadLine();
+            btn.Click();
+
+            Temperature temp = new Temperature();
+            temp.OnTemperatureChanged += (newTemp) => Console.WriteLine($"Температура изменилась: {newTemp}");
+
+            Console.WriteLine("Введите новое значение температуры:");
+            string inp = Console.ReadLine().Replace('.', ',');
+            if (double.TryParse(inp, out double newTemp))
+            {
+                temp.Value = newTemp;
+            }
+            else
+            {
+                Console.WriteLine("Ошибка: введено не число температуры!");
+            }
+        }
+    }
+}

@@ -1,0 +1,72 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+
+public abstract class Creature
+{
+    public string Name { get; set; }
+    public string Species { get; set; }
+
+    public Creature(string name, string species)
+    {
+        Name = name;
+        Species = species;
+    }
+
+    public override string ToString()
+    {
+        return $"{Species} named {Name}";
+    }
+}
+
+public class Clownfish : Creature
+{
+    public Clownfish(string name) : base(name, "Clownfish") { }
+}
+
+public class BlueTang : Creature
+{
+    public BlueTang(string name) : base(name, "Blue tang") { }
+}
+
+public class Shark : Creature
+{
+    public Shark(string name) : base(name, "Shark") { }
+}
+
+public class Oceanarium : IEnumerable<Creature>
+{
+    private List<Creature> inhabitants = new List<Creature>();
+
+    public void Add(Creature creature)
+    {
+        inhabitants.Add(creature);
+    }
+
+    public IEnumerator<Creature> GetEnumerator()
+    {
+        return inhabitants.GetEnumerator(); 
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
+    }
+}
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        Oceanarium oceanarium = new Oceanarium();
+        oceanarium.Add(new Clownfish("Nemo"));
+        oceanarium.Add(new BlueTang("Dory"));
+        oceanarium.Add(new Shark("Bruce"));
+
+        Console.WriteLine("Inhabitants of the oceanarium:");
+        foreach (var creature in oceanarium)
+        {
+            Console.WriteLine(creature);
+        }
+    }
+}

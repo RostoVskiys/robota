@@ -1,0 +1,105 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+class Product
+{
+    public Guid Id { get; } = Guid.NewGuid();
+    public string Name { get; set; }
+    public double Price { get; set; }
+    public string Category { get; set; }
+
+    public override string ToString()
+    {
+        return $"ID: {Id}\nНазвание: {Name}\nЦена: {Price} грн\nКатегория: {Category}\n";
+    }
+}
+
+class Program
+{
+    static void Main()
+    {
+        List<Product> products = new List<Product>
+        {
+            new Product { Name = "Автомобиль", Price = 800000, Category = "Транспорт" },
+            new Product { Name = "Самолёт", Price = 12000000, Category = "Транспорт" },
+            new Product { Name = "Ноутбук", Price = 25000, Category = "Электроника" },
+            new Product { Name = "Смартфон", Price = 18000, Category = "Электроника" },
+            new Product { Name = "Холодильник", Price = 30000, Category = "Бытовая техника" },
+            new Product { Name = "Микроволновка", Price = 7000, Category = "Бытовая техника" },
+            new Product { Name = "Книга", Price = 350, Category = "Книги" },
+            new Product { Name = "Наушники", Price = 2000, Category = "Электроника" }
+        };
+
+        while (true)
+        {
+            Console.WriteLine("\nМеню:");
+            Console.WriteLine("1. Показать все товары");
+            Console.WriteLine("2. Поиск товара по названию");
+            Console.WriteLine("3. Фильтрация по категории");
+            Console.WriteLine("4. Самый дорогой товар");
+            Console.WriteLine("5. Удалить товар по Id");
+            Console.WriteLine("6. Выход");
+            Console.Write("Выберите: ");
+            string option = Console.ReadLine();
+
+            switch (option)
+            {
+                case "1":
+                    foreach (var p in products)
+                        Console.WriteLine(p);
+                    break;
+
+                case "2":
+                    Console.Write("название товара: ");
+                    string name = Console.ReadLine();
+                    var found = products.FirstOrDefault(p => p.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+                    Console.WriteLine(found != null ? found.ToString() : "Товар не найден.");
+                    break;
+
+                case "3":
+                    Console.Write("категория: ");
+                    string category = Console.ReadLine();
+                    var filtered = products.Where(p => p.Category.Equals(category, StringComparison.OrdinalIgnoreCase));
+                    foreach (var p in filtered)
+                        Console.WriteLine(p);
+                    break;
+
+                case "4":
+                    var expensive = products.OrderByDescending(p => p.Price).FirstOrDefault();
+                    Console.WriteLine("Самый дорогой товар:");
+                    Console.WriteLine(expensive);
+                    break;
+
+                case "5":
+                    Console.Write("Id товара для удаления: ");
+                    string idStr = Console.ReadLine();
+                    if (Guid.TryParse(idStr, out Guid id))
+                    {
+                        var productToRemove = products.FirstOrDefault(p => p.Id == id);
+                        if (productToRemove != null)
+                        {
+                            products.Remove(productToRemove);
+                            Console.WriteLine("Товар удален.");
+                        }
+                        else
+                        {
+                            Console.WriteLine("Товар с таким Id не найден.");
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Неверный формат Id.");
+                    }
+                    break;
+
+                case "6":
+                    return;
+
+                default:
+                    Console.WriteLine("Неверная опция.");
+                    break;
+            }
+        }
+    }
+}

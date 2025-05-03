@@ -1,0 +1,107 @@
+using System;
+using System.Linq;
+using System.Collections.Generic;
+
+class Firma
+{
+    public string Nazvanie { get; set; }
+    public DateTime DataOsnovaniya { get; set; }
+    public string Profil { get; set; }
+    public string FioDirektora { get; set; }
+    public int KolichestvoSotrudnikov { get; set; }
+    public string Adres { get; set; }
+}
+
+class Program
+{
+    static void Main()
+    {
+        Firma[] firmy = new Firma[]
+        {
+            new Firma { Nazvanie = "FoodCorp", DataOsnovaniya = new DateTime(2020, 1, 10), Profil = "Маркетинг", FioDirektora = "Ivanov White", KolichestvoSotrudnikov = 150, Adres = "Лондон" },
+            new Firma { Nazvanie = "TechIT", DataOsnovaniya = new DateTime(2022, 5, 15), Profil = "IT", FioDirektora = "Petrov Black", KolichestvoSotrudnikov = 90, Adres = "Берлин" },
+            new Firma { Nazvanie = "WhiteFood", DataOsnovaniya = new DateTime(2024, 1, 1), Profil = "Продукты", FioDirektora = "Sidorov Black", KolichestvoSotrudnikov = 300, Adres = "Лондон" },
+            new Firma { Nazvanie = "MarketingPlus", DataOsnovaniya = new DateTime(2021, 7, 1), Profil = "Маркетинг", FioDirektora = "White White", KolichestvoSotrudnikov = 250, Adres = "Киев" },
+            new Firma { Nazvanie = "SimpleSoft", DataOsnovaniya = DateTime.Today.AddDays(-123), Profil = "IT", FioDirektora = "Sergeev Ivan", KolichestvoSotrudnikov = 120, Adres = "Лондон" },
+        };
+
+        while (true)
+        {
+            Console.WriteLine("\nВыберите запрос:");
+            Console.WriteLine("1 - Показать все фирмы");
+            Console.WriteLine("2 - Название содержит 'Food'");
+            Console.WriteLine("3 - Профиль 'Маркетинг'");
+            Console.WriteLine("4 - Профиль 'Маркетинг' или 'IT'");
+            Console.WriteLine("5 - Кол-во сотрудников > 100");
+            Console.WriteLine("6 - Кол-во сотрудников от 100 до 300");
+            Console.WriteLine("7 - Фирмы в Лондоне");
+            Console.WriteLine("8 - Фамилия директора 'White'");
+            Console.WriteLine("9 - Основаны более 2 лет назад");
+            Console.WriteLine("10 - Основаны ровно 123 дня назад");
+            Console.WriteLine("11 - Директор 'Black' и название содержит 'White'");
+            Console.WriteLine("0 - Выход");
+
+            Console.Write("Введите номер запроса: ");
+            string vvod = Console.ReadLine();
+
+            if (vvod == "0")
+                break;
+
+            switch (vvod)
+            {
+                case "1":
+                    Vivod("Все фирмы", firmy);
+                    break;
+                case "2":
+                    Vivod("Название содержит 'Food'", firmy.Where(f => f.Nazvanie.Contains("Food")));
+                    break;
+                case "3":
+                    Vivod("Профиль 'Маркетинг'", firmy.Where(f => f.Profil == "Маркетинг"));
+                    break;
+                case "4":
+                    Vivod("Профиль 'Маркетинг' или 'IT'", firmy.Where(f => f.Profil == "Маркетинг" || f.Profil == "IT"));
+                    break;
+                case "5":
+                    Vivod("Сотрудников больше 100", firmy.Where(f => f.KolichestvoSotrudnikov > 100));
+                    break;
+                case "6":
+                    Vivod("Сотрудников от 100 до 300", firmy.Where(f => f.KolichestvoSotrudnikov >= 100 && f.KolichestvoSotrudnikov <= 300));
+                    break;
+                case "7":
+                    Vivod("Фирмы в Лондоне", firmy.Where(f => f.Adres == "Лондон"));
+                    break;
+                case "8":
+                    Vivod("Фамилия директора 'White'", firmy.Where(f => f.FioDirektora.Split(' ').Last() == "White"));
+                    break;
+                case "9":
+                    Vivod("Основаны более 2 лет назад", firmy.Where(f => (DateTime.Today - f.DataOsnovaniya).TotalDays > 730));
+                    break;
+                case "10":
+                    Vivod("Основаны ровно 123 дня назад", firmy.Where(f => (DateTime.Today - f.DataOsnovaniya).TotalDays == 123));
+                    break;
+                case "11":
+                    Vivod("Директор 'Black' и название содержит 'White'", firmy.Where(f => f.FioDirektora.Split(' ').Last() == "Black" && f.Nazvanie.Contains("White")));
+                    break;
+                default:
+                    Console.WriteLine("Неверный ввод. Повторите.");
+                    break;
+            }
+        }
+    }
+
+    static void Vivod(string zagolovok, IEnumerable<Firma> firmy)
+    {
+        Console.WriteLine($"\n=== {zagolovok} ===");
+        int count = 0;
+        foreach (var f in firmy)
+        {
+            Console.WriteLine($"Название: {f.Nazvanie}, Дата основания: {f.DataOsnovaniya.ToShortDateString()}, Профиль: {f.Profil}, Директор: {f.FioDirektora}, Сотрудников: {f.KolichestvoSotrudnikov}, Адрес: {f.Adres}");
+            count++;
+        }
+
+        if (count == 0)
+        {
+            Console.WriteLine("Нет подходящих фирм.");
+        }
+    }
+}

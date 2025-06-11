@@ -1,0 +1,213 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace Lunapark
+{
+    public interface IObekt
+    {
+        string Nazvanie { get; }
+        decimal Stoimost { get; }
+        bool Dostupen { get; }
+    }
+
+    public class Atraktsion : IObekt
+    {
+        public string Nazvanie { get; set; }
+        public string Opisanie { get; set; }
+        public decimal Stoimost { get; set; }
+        public int VozrastOgranichenie { get; set; }
+        public double RostOgranichenie { get; set; }
+        public bool Dostupen { get; private set; } = true;
+
+        public void Zablokirovat() => Dostupen = false;
+        public void Razblokirovat() => Dostupen = true;
+    }
+
+    public class Usluga : IObekt
+    {
+        public string Nazvanie { get; set; }
+        public string Opisanie { get; set; }
+        public decimal Stoimost { get; set; }
+        public bool Dostupen { get; private set; } = true;
+
+        public void Vklyuchit() => Dostupen = true;
+        public void Otklyuchit() => Dostupen = false;
+    }
+
+    public class Posetitel
+    {
+        public string Imya { get; set; }
+        public int Vozrast { get; set; }
+        public double Rost { get; set; }
+
+        public Bilet KupitBilet(IObekt obekt)
+        {
+            if (!obekt.Dostupen)
+            {
+                Console.WriteLine("объект недоступен");
+                return null;
+            }
+
+            if (obekt is Atraktsion atraktsion)
+            {
+                if (Vozrast < atraktsion.VozrastOgranichenie || Rost < atraktsion.RostOgranichenie)
+                {
+                    Console.WriteLine("нет доступа по возрасту или росту");
+                    return null;
+                }
+            }
+
+            Bilet bilet = new Bilet(obekt, this);
+            MagazinBiletov.Instance.DobavitBilet(bilet);
+            Console.WriteLine("билет куплен");
+            return bilet;
+        }
+
+        public void VernutBilet(Bilet bilet)
+        {
+            if (bilet != null && bilet.Status == "активен" && bilet.Pokupatel == this)
+            {
+                bilet.Status = "возвращен";
+                Console.WriteLine("билет возвращен");
+            }
+            else
+            {
+                Console.WriteLine("нельзя вернуть билет");
+            }
+        }
+    }
+
+    public class Bilet
+    {
+        public IObekt Obekt { get; private set; }
+        public Posetitel Pokupatel { get; private set; }
+        public DateTime DataPokupki { get; private set; }
+        public string Status { get; set; }
+
+        public Bilet(IObekt obekt, Posetitel pokupatel)
+        {
+            Obekt = obekt;
+            Pokupatel = pokupatel;
+            DataPokupki = DateTime.Now;
+            Status = "активен";
+        }
+    }
+
+    public class MagazinBiletov
+    {
+        private static MagazinBiletov instans;
+        public static MagazinBiletov Instance => instans ?? (instans = new MagazinBiletov());
+
+        private List<Bilet> vsebileti = new List<Bilet>();
+
+        public void DobavitBilet(Bilet bilet)
+        {
+            vsebileti.Add(bilet);
+        }
+
+        public List<Bilet> PoluchitBileti(Posetitel posetitel)
+        {
+            return vsebileti.Where(b => b.Pokupatel == posetitel).ToList();
+        }
+    }
+
+    class Programma
+    {
+        static void Main()
+        {
+            List<IObekt> obekti = new List<IObekt>
+            {
+                new Atraktsion { Nazvanie = "американские горки", Opisanie = "быстрые", Stoimost = 15, VozrastOgranichenie = 12, RostOgranichenie = 140 },
+                new Atraktsion { Nazvanie = "колесо обозрения", Opisanie = "высоко", Stoimost = 10, VozrastOgranichenie = 0, RostOgranichenie = 0 },
+                new Usluga { Nazvanie = "камера хранения", Opisanie = "хранение вещей", Stoimost = 1 },
+                new Usluga { Nazvanie = "электросамокат", Opisanie = "прокат", Stoimost = 20 }
+            };
+
+            Console.WriteLine("введите имя");
+            string imya = Console.ReadLine();
+            Console.WriteLine("введите возраст");
+            int vozrast = int.Parse(Console.ReadLine());
+            Console.WriteLine("введите рост");
+            double rost = double.Parse(Console.ReadLine());
+
+            Posetitel posetitel = new Posetitel { Imya = imya, Vozrast = vozrast, Rost = rost };
+
+            while (true)
+            {
+                Console.WriteLine("1 показать объекты");
+                Console.WriteLine("2 купить билет");
+                Console.WriteLine("3 вернуть билет");
+                Console.WriteLine("4 мои билеты");
+                Console.WriteLine("0 выход");
+
+                string vibor = Console.ReadLine();
+
+                if (vibor == "1")
+                {
+                    for (int i = 0; i < obekti.Count; i++)
+                    {
+                        var o = obekti[i];
+                        Console.WriteLine($"{i + 1} {o.Nazvanie} {o.Stoimost} $");
+                    }
+                }
+                else if (vibor == "2")
+                {
+                    Console.WriteLine("введите номер объекта");
+                    int nomer = int.Parse(Console.ReadLine());
+                    if (nomer >= 1 && nomer <= obekti.Count)
+                    {
+                        posetitel.KupitBilet(obekti[nomer - 1]);
+                    }
+                }
+                else if (vibor == "3")
+                {
+                    var moibileti = MagazinBiletov.Instance.PoluchitBileti(posetitel)
+                        .Where(b => b.Status == "активен").ToList();
+
+                    if (moibileti.Count == 0)
+                    {
+                        Console.WriteLine("нет активных билетов");
+                    }
+                    else
+                    {
+                        for (int i = 0; i < moibileti.Count; i++)
+                        {
+                            Console.WriteLine($"{i + 1} {moibileti[i].Obekt.Nazvanie}");
+                        }
+                        Console.WriteLine("введите номер билета");
+                        int nomer = int.Parse(Console.ReadLine());
+                        if (nomer >= 1 && nomer <= moibileti.Count)
+                        {
+                            posetitel.VernutBilet(moibileti[nomer - 1]);
+                        }
+                    }
+                }
+                else if (vibor == "4")
+                {
+                    var moiBileti = MagazinBiletov.Instance.PoluchitBileti(posetitel);
+                    if (moiBileti.Count == 0)
+                    {
+                        Console.WriteLine("нет билетов");
+                    }
+                    else
+                    {
+                        foreach (var b in moiBileti)
+                        {
+                            Console.WriteLine($"{b.Obekt.Nazvanie} статус {b.Status} дата {b.DataPokupki}");
+                        }
+                    }
+                }
+                else if (vibor == "0")
+                {
+                    Console.WriteLine("выход из программы");
+                    break;
+                }
+                else
+                {
+                    Console.WriteLine("неверная команда");
+                }
+            }
+        }
+    }
+}

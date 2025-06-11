@@ -1,0 +1,173 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+
+class Film : IDisposable
+{
+    public string Nazvanie { get; set; }
+    public string Kinostudiya { get; set; }
+    public string Zhanr { get; set; }
+    public int Dlitelnost { get; set; }
+    public int God { get; set; }
+
+    public Film(string nazvanie, string kinostudiya, string zhanr, int dlitelnost, int god)
+    {
+        Nazvanie = nazvanie;
+        Kinostudiya = kinostudiya;
+        Zhanr = zhanr;
+        Dlitelnost = dlitelnost;
+        God = god;
+    }
+
+    public void Pokazat()
+    {
+        Console.WriteLine($"Название фильма: {Nazvanie}");
+        Console.WriteLine($"Киностудия: {Kinostudiya}");
+        Console.WriteLine($"Жанр: {Zhanr}");
+        Console.WriteLine($"Длительность: {Dlitelnost} минут");
+        Console.WriteLine($"Год выпуска: {God}");
+    }
+
+    public void Dispose()
+    {
+        Console.WriteLine($"Метод очистки вызван для фильма: {Nazvanie}");
+        GC.SuppressFinalize(this);
+    }
+
+    ~Film()
+    {
+        Console.WriteLine($"Деструктор вызван для фильма: {Nazvanie}");
+    }
+}
+
+class Spectakl : IDisposable
+{
+    public string Nazvanie { get; set; }
+    public string Teatr { get; set; }
+    public string Zhanr { get; set; }
+    public int Dlitelnost { get; set; }
+    public List<string> Aktery { get; set; }
+
+    public Spectakl(string nazvanie, string teatr, string zhanr, int dlitelnost, List<string> aktery)
+    {
+        Nazvanie = nazvanie;
+        Teatr = teatr;
+        Zhanr = zhanr;
+        Dlitelnost = dlitelnost;
+        Aktery = aktery;
+    }
+
+    public void Pokazat()
+    {
+        Console.WriteLine($"Название спектакля: {Nazvanie}");
+        Console.WriteLine($"Театр: {Teatr}");
+        Console.WriteLine($"Жанр: {Zhanr}");
+        Console.WriteLine($"Длительность: {Dlitelnost} минут");
+        Console.WriteLine("Актёры:");
+        foreach (var akter in Aktery)
+            Console.WriteLine($"- {akter}");
+    }
+
+    public void Dispose()
+    {
+        Console.WriteLine($"Метод очистки вызван для спектакля: {Nazvanie}");
+        GC.SuppressFinalize(this);
+    }
+
+    ~Spectakl()
+    {
+        Console.WriteLine($"Деструктор вызван для спектакля: {Nazvanie}");
+    }
+}
+
+class ObrabotchikFayla : IDisposable
+{
+    private StreamReader chitatel;
+    private StreamWriter pisatel;
+    private bool ochishchen;
+    private string logFayl = "log.txt";
+
+    public ObrabotchikFayla(string vvod, string vyvod)
+    {
+        chitatel = new StreamReader(vvod);
+        pisatel = new StreamWriter(vyvod);
+    }
+
+    public void Obrabotat()
+    {
+        string tekst = chitatel.ReadToEnd();
+        int stroki = tekst.Split('\n').Length;
+        int slova = tekst.Split(new char[] { ' ', '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries).Length;
+        pisatel.WriteLine($"Количество строк: {stroki}");
+        pisatel.WriteLine($"Количество слов: {slova}");
+    }
+
+    public void Dispose()
+    {
+        if (!ochishchen)
+        {
+            chitatel?.Close();
+            pisatel?.Close();
+            ochishchen = true;
+            GC.SuppressFinalize(this);
+            Console.WriteLine("Файлы закрыты (метод очистки).");
+        }
+    }
+
+    ~ObrabotchikFayla()
+    {
+        if (!ochishchen)
+        {
+            chitatel?.Close();
+            pisatel?.Close();
+            File.AppendAllText(logFayl, $"[{DateTime.Now}] Деструктор обработчика файла");
+            Console.WriteLine("Файлы закрыты (деструктор).");
+        }
+    }
+}
+
+class Program
+{
+    static void Main()
+    {
+        while (true)
+        {
+            Console.WriteLine("Выберите задание:");
+            Console.WriteLine("1 - Фильм");
+            Console.WriteLine("2 - Спектакль");
+            Console.WriteLine("3 - Обработка файла");
+            Console.WriteLine("0 - Выход");
+            Console.Write("Ваш выбор: ");
+
+            string vibor = Console.ReadLine();
+
+            if (vibor == "1")
+            {
+                Film film = new Film("Матрица", "Ворнер Бразерс", "Фантастика", 136, 1999);
+                film.Pokazat();
+                film.Dispose();
+            }
+            else if (vibor == "2")
+            {
+                using (Spectakl spektakl = new Spectakl("Гамлет", "Национальный театр", "Драма", 120, new List<string> { "Иванов", "Петров" }))
+                {
+                    spektakl.Pokazat();
+                }
+            }
+            else if (vibor == "3")
+            {
+                File.WriteAllText("vhod.txt", "Это пример текста. Вторая строка. И третья строка.");
+                using (ObrabotchikFayla obrabotchik = new ObrabotchikFayla("vhod.txt", "vyhod.txt"))
+                {
+                    obrabotchik.Obrabotat();
+                }
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+            }
+            else if (vibor == "0")
+            {
+                break;
+            }
+        }
+    }
+}

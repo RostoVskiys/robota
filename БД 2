@@ -1,0 +1,51 @@
+create database academy;
+use academy;
+create table students(
+id int primary key 
+identity,
+name varchar(20),
+group1 varchar(20),
+age int
+)
+create table teachers(
+id int primary key 
+identity,
+name varchar(20),
+phone varchar(20),
+email varchar(20),
+)
+insert into students values(
+'alecs','gup37',23
+)
+insert into students values(
+'anna','gup12',28
+)
+insert into students values(
+'san','gup37',23
+)
+insert into students values(
+'lera','gup37',23
+)
+insert into students values(
+'rostic','gup38',23
+)
+insert into teachers values(
+'alex','068_913_42_45','email@2050.com'
+)
+insert into teachers values(
+'olena','068_903_42_45','email@2030.com'
+)
+insert into teachers values(
+'maria','068_993_42_45','email@2070.com'
+)
+insert into teachers values(
+'bogdan','069_963_42_45','email@2800.com'
+)
+insert into teachers values(
+'vadim','068_923_46_45','email@2300.com'
+)
+
+select * from students
+
+
+select * from teachers 

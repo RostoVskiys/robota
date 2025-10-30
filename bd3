@@ -1,0 +1,68 @@
+create database academy;
+
+-- 
+use academy;
+
+-- 
+create table faculties (
+    id int identity(1,1) primary key not null,
+    dean nvarchar(max) not null,
+    name nvarchar(100) not null unique
+);
+
+-- 
+create table departments (
+    id int identity(1,1) primary key not null,
+    financing money not null check (financing >= 0) default 0,
+    name nvarchar(100) not null unique
+);
+
+-- 
+create table groups (
+    id int identity(1,1) primary key not null,
+    name nvarchar(10) not null unique,
+    rating int not null check (rating between 0 and 5),
+    year int not null check (year between 1 and 5)
+);
+
+-- 
+create table teachers (
+    id int identity(1,1) primary key not null,
+    employmentdate date not null check (employmentdate >= '1990-01-01'),
+    isassistant bit not null default 0,
+    isprofessor bit not null default 0,
+    name nvarchar(max) not null,
+    position nvarchar(max) not null,
+    premium money not null check (premium >= 0) default 0,
+    salary money not null check (salary > 0),
+    surname nvarchar(max) not null
+);
+
+--
+insert into faculties (dean, name) values
+('John Smith', 'Computer Science'),
+('Anna Brown', 'Mathematics'),
+('Robert Lee', 'Physics');
+
+insert into departments (financing, name) values
+(15000, 'Software Development'),
+(8000, 'Applied Mathematics'),
+(27000, 'Quantum Research');
+
+insert into groups (name, rating, year) values
+('CS-01', 4, 5),
+('CS-02', 3, 4),
+('MATH-11', 5, 5),
+('PHY-01', 2, 3);
+
+insert into teachers (employmentdate, isassistant, isprofessor, name, position, premium, salary, surname) values
+('1995-05-10', 0, 1, 'John', 'Professor', 400, 1200, 'Johnson'),
+('2005-03-12', 1, 0, 'Alice', 'Assistant', 200, 800, 'Cooper'),
+('2010-09-01', 0, 0, 'Robert', 'Lecturer', 300, 950, 'Miller'),
+('1998-11-22', 0, 1, 'Maria', 'Professor', 600, 1500, 'Gomez');
+
+--
+select * from faculties;
+select * from departments;
+select * from groups;
+select * from teachers;

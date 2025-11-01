@@ -1,0 +1,254 @@
+-- sozdanije bazy
+create database academy;
+go
+use ac
+ademy;
+go
+-- predmety
+-- lekcii
+-- gruppy_i_lekcii
+-- gruppy
+-- gruppy_i_kuratory
+-- predmety
+-- fakul'tety
+-- kafedry
+-- prepodavateli
+-- kuratory
+create table Curators (
+    Id int identity primary key not null,
+    Name nvarchar(max) not null check (Name <> ''),
+    Surname nvarchar(max) not null check (Surname <> '')
+);
+
+
+create table Departments (
+    Id int identity primary key not null,
+    Financing money not null check (Financing >= 0) default 0,
+    Name nvarchar(100) not null unique check (Name <> ''),
+    FacultyId int not null
+);
+
+create table Faculties (
+    Id int identity primary key not null,
+    Financing money not null check (Financing >= 0) default 0,
+    Name nvarchar(100) not null unique check (Name <> '')
+);
+
+
+create table Groups (
+    Id int identity primary key not null,
+    Name nvarchar(10) not null unique check (Name <> ''),
+    Year int not null check (Year between 1 and 5),
+    DepartmentId int not null
+);
+
+create table GroupsCurators (
+    Id int identity primary key not null,
+    CuratorId int not null,
+    GroupId int not null
+);
+
+create table GroupsLectures (
+    Id int identity primary key not null,
+    GroupId int not null,
+    LectureId int not null
+);
+
+
+create table Lectures (
+    Id int identity primary key not null,
+    LectureRoom nvarchar(max) not null check (LectureRoom <> ''),
+    SubjectId int not null,
+    TeacherId int not null
+);
+
+
+create table Subjects (
+    Id int identity primary key not null,
+    Name nvarchar(100) not null unique check (Name <> '')
+);
+
+
+create table Teachers (
+    Id int identity primary key not null,
+    Name nvarchar(max) not null check (Name <> ''),
+    Surname nvarchar(max) not null check (Surname <> ''),
+    Salary money not null check (Salary > 0)
+);
+
+-- vneshnie_klyuchi
+alter table Departments add foreign key (FacultyId) references Faculties(Id);
+alter table Groups add foreign key (DepartmentId) references Departments(Id);
+alter table GroupsCurators add foreign key (CuratorId) references Curators(Id);
+alter table GroupsCurators add foreign key (GroupId) references Groups(Id);
+alter table GroupsLectures add foreign key (GroupId) references Groups(Id);
+alter table GroupsLectures add foreign key (LectureId) references Lectures(Id);
+alter table Lectures add foreign key (SubjectId) references Subjects(Id);
+alter table Lectures add foreign key (TeacherId) references Teachers(Id);
+
+-- zapolnenije dannymi
+-- fakul'tety
+-- kafedry
+-- kuratory
+-- gruppy
+-- prepodavateli
+-- gruppy_i_kuratory
+-- lekcii
+-- gruppy_i_lekcii
+-- predmety
+
+insert into Faculties (Name, Financing) values 
+('Komputerni nauky', 1000000),
+('Matematika', 800000),
+('Fizika', 900000);
+
+insert into Departments (Name, Financing, FacultyId) values
+('Programuvannja', 600000, 1),
+('Informacijni systemy', 500000, 1),
+('Algebra', 300000, 2),
+('Mechanika', 400000, 3);
+
+insert into Groups (Name, Year, DepartmentId) values
+('P101', 1, 1),
+('P102', 2, 1),
+('P103', 3, 2),
+('P104', 4, 2),
+('P105', 5, 2),
+('P106', 5, 3),
+('P107', 3, 1);
+
+insert into Curators (Name, Surname) values
+('Olena', 'Ivanova'),
+('Andriy', 'Petrov'),
+('Sergiy', 'Kovalenko');
+
+insert into GroupsCurators (CuratorId, GroupId) values
+(1, 1),
+(1, 2),
+(2, 3),
+(2, 4),
+(3, 5),
+(3, 6),
+(1, 7);
+
+insert into Teachers (Name, Surname, Salary) values
+('Samantha', 'Adams', 5000),
+('John', 'Doe', 4500),
+('Maria', 'Petrenko', 4800),
+('Igor', 'Shevchenko', 5200);
+
+insert into Subjects (Name) values
+('Teorija baz danih'),
+('Programuvannja C#'),
+('Matematika'),
+('Fizika'),
+('Algoritmy');
+
+insert into Lectures (LectureRoom, SubjectId, TeacherId) values
+('B101', 1, 1),
+('B102', 2, 2),
+('B103', 3, 3),
+('B103', 4, 4),
+('B104', 5, 2),
+('B105', 1, 1),
+('B103', 2, 1);
+
+insert into GroupsLectures (GroupId, LectureId) values
+(1, 1),
+(2, 2),
+(3, 3),
+(4, 4),
+(5, 5),
+(6, 6),
+(7, 7);
+
+-- vivod vsekh tablits
+select * from Curators;
+select * from Departments;
+select * from Faculties;
+select * from Groups;
+select * from GroupsCurators;
+select * from GroupsLectures;
+select * from Lectures;
+select * from Subjects;
+select * from Teachers;
+
+-- zaprosy
+-- vse vozmozhnye pary prepodavateley i grupp
+select t.Name, t.Surname, g.Name as GroupName
+from Teachers t
+cross join Groups g;
+
+-- nazvaniya fakul'tetov gde finansirovanie kafedr prevyshaet finansirovanie fakul'teta
+select f.Name as FacultyName
+from Faculties f
+join Departments d on d.FacultyId = f.Id
+group by f.Id, f.Name, f.Financing
+having sum(d.Financing) > f.Financing;
+
+-- prizvushe kuratorov i nazvaniya grupp kotorye oni kuruyut
+select c.Surname as CuratorSurname, g.Name as GroupName
+from Curators c
+join GroupsCurators gc on gc.CuratorId = c.Id
+join Groups g on g.Id = gc.GroupId;
+
+-- prizvushe prepodavateley kotorye chitajut lekcii v gruppe P107
+select distinct t.Surname
+from Teachers t
+join Lectures l on l.TeacherId = t.Id
+join GroupsLectures gl on gl.LectureId = l.Id
+join Groups g on g.Id = gl.GroupId
+where g.Name = 'P107';
+
+-- prizvushe prepodavateley i nazvaniya fakul'tetov gde oni chitajut lekcii
+select distinct t.Surname, f.Name as FacultyName
+from Teachers t
+join Lectures l on l.TeacherId = t.Id
+join GroupsLectures gl on gl.LectureId = l.Id
+join Groups g on g.Id = gl.GroupId
+join Departments d on d.Id = g.DepartmentId
+join Faculties f on f.Id = d.FacultyId;
+
+-- nazvaniya kafedr i grupp k kotorym oni otnosyatsya
+select d.Name as DepartmentName, g.Name as GroupName
+from Departments d
+join Groups g on g.DepartmentId = d.Id;
+
+-- nazvaniya predmetov kotorye prepodavaet Samantha Adams
+select s.Name as SubjectName
+from Subjects s
+join Lectures l on l.SubjectId = s.Id
+join Teachers t on t.Id = l.TeacherId
+where t.Name = 'Samantha' and t.Surname = 'Adams';
+
+-- nazvaniya kafedr gde prepodavaetsya predmet Teorija baz danih
+select distinct d.Name as DepartmentName
+from Departments d
+join Groups g on g.DepartmentId = d.Id
+join GroupsLectures gl on gl.GroupId = g.Id
+join Lectures l on l.Id = gl.LectureId
+join Subjects s on s.Id = l.SubjectId
+where s.Name = 'Teorija baz danih';
+
+-- nazvaniya grupp kotorye prinadlezhat fakul'tetu Komputerni nauky
+select g.Name as GroupName
+from Groups g
+join Departments d on d.Id = g.DepartmentId
+join Faculties f on f.Id = d.FacultyId
+where f.Name = 'Komputerni nauky';
+
+-- nazvaniya grupp 5-go kursa i fakul'tetov k kotorym oni otnosyatsya
+select g.Name as GroupName, f.Name as FacultyName
+from Groups g
+join Departments d on d.Id = g.DepartmentId
+join Faculties f on f.Id = d.FacultyId
+where g.Year = 5;
+
+-- prizvushe prepodavateley i lekcii kotorye oni chitajut v auditorii B103
+select t.Surname as TeacherSurname, s.Name as SubjectName, g.Name as GroupName
+from Teachers t
+join Lectures l on l.TeacherId = t.Id
+join Subjects s on s.Id = l.SubjectId
+join GroupsLectures gl on gl.LectureId = l.Id
+join Groups g on g.Id = gl.GroupId
+where l.LectureRoom = 'B103';

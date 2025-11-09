@@ -1,0 +1,285 @@
+create database academy;
+use academy;
+
+-- 
+create table teachers (
+    id int identity primary key not null,
+    name nvarchar(max) not null,
+    surname nvarchar(max) not null
+);
+
+-- 
+create table assistants (
+    id int identity primary key not null,
+    teacherid int not null foreign key references teachers(id)
+);
+
+-- 
+create table curators (
+    id int identity primary key not null,
+    teacherid int not null foreign key references teachers(id)
+);
+
+-- 
+create table deans (
+    id int identity primary key not null,
+    teacherid int not null foreign key references teachers(id)
+);
+
+-- 
+create table heads (
+    id int identity primary key not null,
+    teacherid int not null foreign key references teachers(id)
+);
+
+-- 
+create table faculties (
+    id int identity primary key not null,
+    building int not null check (building between 1 and 5),
+    name nvarchar(100) not null unique,
+    deanid int not null foreign key references deans(id)
+);
+
+-- 
+create table departments (
+    id int identity primary key not null,
+    building int not null check (building between 1 and 5),
+    name nvarchar(100) not null unique,
+    facultyid int not null foreign key references faculties(id),
+    headid int not null foreign key references heads(id)
+);
+
+-- 
+create table groups (
+    id int identity primary key not null,
+    name nvarchar(10) not null unique,
+    year int not null check (year between 1 and 5),
+    departmentid int not null foreign key references departments(id)
+);
+
+-- 
+create table groupscurators (
+    id int identity primary key not null,
+    curatorid int not null foreign key references curators(id),
+    groupid int not null foreign key references groups(id)
+);
+
+-- 
+create table subjects (
+    id int identity primary key not null,
+    name nvarchar(100) not null unique
+);
+
+-- 
+create table lectures (
+    id int identity primary key not null,
+    subjectid int not null foreign key references subjects(id),
+    teacherid int not null foreign key references teachers(id)
+);
+
+-- 
+create table groupslectures (
+    id int identity primary key not null,
+    groupid int not null foreign key references groups(id),
+    lectureid int not null foreign key references lectures(id)
+);
+
+-- 
+create table lecturerooms (
+    id int identity primary key not null,
+    building int not null check (building between 1 and 6),
+    name nvarchar(10) not null unique
+);
+
+-- 
+create table schedules (
+    id int identity primary key not null,
+    class int not null check (class between 1 and 8),
+    dayofweek int not null check (dayofweek between 1 and 7),
+    week int not null check (week between 1 and 52),
+    lectureid int not null foreign key references lectures(id),
+    lectureroomid int not null foreign key references lecturerooms(id)
+);
+
+-- 
+create table students (
+    id int identity primary key not null,
+    name nvarchar(max) not null,
+    surname nvarchar(max) not null,
+    groupid int not null foreign key references groups(id)
+);
+
+-- 
+insert into teachers (name, surname) values
+('edward', 'hopper'),
+('alex', 'carmack'),
+('mary', 'shelton'),
+('david', 'ross'),
+('kate', 'taylor'),
+('oliver', 'stone'),
+('julia', 'clark');
+
+-- 
+insert into assistants (teacherid) values
+(3), (7);
+
+-- 
+insert into curators (teacherid) values
+(4), (5);
+
+-- 
+insert into deans (teacherid) values
+(1);
+
+-- 
+insert into heads (teacherid) values
+(2);
+
+-- 
+insert into faculties (building, name, deanid) values
+(3, 'computer science', 1);
+
+-- 
+insert into departments (building, name, facultyid, headid) values
+(3, 'software development', 1, 1),
+(2, 'information systems', 1, 1);
+
+-- 
+insert into groups (name, year, departmentid) values
+('f505', 5, 1),
+('f301', 3, 1),
+('is201', 2, 2);
+
+-- 
+insert into groupscurators (curatorid, groupid) values
+(1, 1),
+(2, 3);
+
+-- 
+insert into subjects (name) values
+('databases'),
+('oop'),
+('network programming');
+
+-- 
+insert into lectures (subjectid, teacherid) values
+(1, 1),
+(2, 2),
+(3, 3);
+
+-- 
+insert into groupslectures (groupid, lectureid) values
+(1, 1),
+(1, 2),
+(2, 3);
+
+-- 
+insert into lecturerooms (building, name) values
+(3, 'a201'),
+(6, 'a311'),
+(6, 'a104'),
+(2, 'b105');
+
+-- 
+insert into schedules (class, dayofweek, week, lectureid, lectureroomid) values
+(3, 1, 1, 1, 1),
+(3, 3, 2, 2, 2),
+(2, 4, 1, 3, 3);
+
+-- 
+select distinct lr.name
+from lecturerooms lr
+join schedules s on lr.id = s.lectureroomid
+join lectures l on s.lectureid = l.id
+join teachers t on l.teacherid = t.id
+where t.name = 'edward' and t.surname = 'hopper';
+
+-- 
+select distinct t.surname
+from teachers t
+join assistants a on t.id = a.teacherid
+join lectures l on l.teacherid = t.id
+join groupslectures gl on gl.lectureid = l.id
+join groups g on g.id = gl.groupid
+where g.name = 'f505';
+
+-- 
+select distinct s.name
+from subjects s
+join lectures l on s.id = l.subjectid
+join teachers t on t.id = l.teacherid
+join groupslectures gl on gl.lectureid = l.id
+join groups g on g.id = gl.groupid
+where t.name = 'alex' and t.surname = 'carmack' and g.year = 5;
+
+-- 
+select distinct t.surname
+from teachers t
+where t.id not in (
+    select distinct l.teacherid
+    from lectures l
+    join schedules s on s.lectureid = l.id
+    where s.dayofweek = 1
+);
+
+-- 
+select lr.name, lr.building
+from lecturerooms lr
+where lr.id not in (
+    select s.lectureroomid
+    from schedules s
+    where s.dayofweek = 3 and s.week = 2 and s.class = 3
+);
+
+-- 
+select distinct t.name, t.surname
+from teachers t
+join departments d on d.headid = t.id or d.facultyid in (
+    select f.id from faculties f where f.name = 'computer science'
+)
+where t.id not in (
+    select cu.teacherid
+    from curators cu
+    join groupscurators gc on gc.curatorid = cu.id
+    join groups g on g.id = gc.groupid
+    join departments d2 on d2.id = g.departmentid
+    where d2.name = 'software development'
+);
+
+-- 
+select distinct building
+from (
+    select building from faculties
+    union
+    select building from departments
+    union
+    select building from lecturerooms
+) as allbuildings;
+
+-- 
+select t.name, t.surname, 'dean' as role
+from teachers t join deans d on t.id = d.teacherid
+union all
+select t.name, t.surname, 'head' as role
+from teachers t join heads h on t.id = h.teacherid
+union all
+select t.name, t.surname, 'teacher' as role
+from teachers t
+where t.id not in (
+    select teacherid from deans
+    union select teacherid from heads
+    union select teacherid from curators
+    union select teacherid from assistants
+)
+union all
+select t.name, t.surname, 'curator' as role
+from teachers t join curators c on t.id = c.teacherid
+union all
+select t.name, t.surname, 'assistant' as role
+from teachers t join assistants a on t.id = a.teacherid;
+
+-- 
+select distinct s.dayofweek
+from schedules s
+join lecturerooms lr on s.lectureroomid = lr.id
+where lr.building = 6 and lr.name in ('a311', 'a104');

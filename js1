@@ -1,0 +1,56 @@
+// 1
+let name = prompt("Введіть ваше ім'я:");
+alert("Привіт, " + name + "!");
+
+// 2
+const CURRENT_YEAR = 2024;
+let year = prompt("Введіть ваш рік народження:");
+let age = CURRENT_YEAR - year;
+alert("Вам " + age + " років");
+
+// 3
+let side = prompt("Введіть довжину сторони квадрата:");
+let perimeter = side * 4;
+alert("Периметр квадрата: " + perimeter);
+
+// 4
+let r = prompt("Введіть радіус кола:");
+let area = Math.PI * r * r;
+alert("Площа кола: " + area);
+
+// 5
+let distance = prompt("Відстань між містами (км):");
+let hours = prompt("За скільки годин хочете дістатися?");
+let speed = distance / hours;
+alert("Потрібна швидкість: " + speed + " км/год");
+
+// 6
+const RATE = 0.92;
+let dollars = prompt("Введіть суму у доларах:");
+let euros = dollars * RATE;
+alert("У євро це: " + euros);
+
+// 7
+let gb = prompt("Обсяг флешки у ГБ:");
+let mb = gb * 1024;
+let files = Math.floor(mb / 820);
+alert("Файлів вміститься: " + files);
+
+// 8
+let money = prompt("Сума грошей у гаманці:");
+let price = prompt("Ціна однієї шоколадки:");
+let count = Math.floor(money / price);
+let change = money - count * price;
+alert("Можете купити: " + count + " шоколадок. Здача: " + change);
+
+// 9
+let num = prompt("Введіть тризначне число:");
+let a = Math.floor(num / 100);
+let b = Math.floor((num % 100) / 10);
+let c = num % 10;
+let reversed = "" + c + b + a;
+alert("Перевернуте число: " + reversed);
+
+// 10
+let x = prompt("Введіть ціле число:");
+alert(x % 2 === 0 && "Парне" || "Непарне");

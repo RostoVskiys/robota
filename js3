@@ -1,0 +1,103 @@
+//1
+let car = {
+    producer: "bmw",
+    model: "x5",
+    year: 2010,
+    speed: 80
+};
+
+function showCar(c) {
+    console.log(c.producer, c.model, c.year, c.speed);
+}
+
+function timeToDistance(c, dist) {
+    let t = dist / c.speed;
+    let pauses = Math.floor(t / 4);
+    return t + pauses;
+}
+
+
+showCar(car);
+console.log(timeToDistance(car, 400));
+
+
+//2
+let fraction = (n, d) => ({ n, d });
+
+function add(f1, f2) {
+    return reduce({
+        n: f1.n * f2.d + f2.n * f1.d,
+        d: f1.d * f2.d
+    });
+}
+
+function sub(f1, f2) {
+    return reduce({
+        n: f1.n * f2.d - f2.n * f1.d,
+        d: f1.d * f2.d
+    });
+}
+
+function mul(f1, f2) {
+    return reduce({
+        n: f1.n * f2.n,
+        d: f1.d * f2.d
+    });
+}
+
+function div(f1, f2) {
+    return reduce({
+        n: f1.n * f2.d,
+        d: f1.d * f2.n
+    });
+}
+
+function reduce(f) {
+    function gcd(a, b) {
+        return b === 0 ? a : gcd(b, a % b);
+    }
+    let g = gcd(f.n, f.d);
+    return { n: f.n / g, d: f.d / g };
+}
+
+
+console.log(add(fraction(1,2), fraction(1,3)));
+console.log(sub(fraction(3,4), fraction(1,6)));
+console.log(mul(fraction(2,5), fraction(3,7)));
+console.log(div(fraction(5,8), fraction(2,3)));
+
+
+//3
+let time = {
+    h: 20,
+    m: 30,
+    s: 45
+};
+
+function showTime(t) {
+    console.log(t.h + ":" + t.m + ":" + t.s);
+}
+
+function addSeconds(t, sec) {
+    let total = t.h * 3600 + t.m * 60 + t.s + sec;
+    t.h = Math.floor(total / 3600) % 24;
+    t.m = Math.floor(total % 3600 / 60);
+    t.s = total % 60;
+}
+
+function addMinutes(t, min) {
+    addSeconds(t, min * 60);
+}
+
+function addHours(t, hrs) {
+    addSeconds(t, hrs * 3600);
+}
+
+
+showTime(time);
+addSeconds(time, 30);
+showTime(time);
+addMinutes(time, 10);
+showTime(time);
+addHours(time, 2);
+showTime(time);

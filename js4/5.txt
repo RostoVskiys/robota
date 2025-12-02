@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+  body { background:#f7efe6; padding:40px; font-size:22px; }
+  li { padding:6px; cursor:pointer; transition:0.2s; }
+  .active { background:orange; }
+</style>
+</head>
+<body>
+
+<ol id="books">
+  <li>"JavaScript for Kids" by Nick Morgan</li>
+  <li>"Eloquent JavaScript" by Marijn Haverbeke</li>
+  <li>"JavaScript: The Good Parts" by Douglas Crockford</li>
+  <li>"Programming JavaScript Applications" by Eric Elliott</li>
+  <li>"Effective JavaScript" by David Herman</li>
+  <li>"JavaScript: The Definitive Guide" by David Flanagan</li>
+  <li>"You Don't Know JS" by Kyle Simpson</li>
+</ol>
+
+<script>
+  const list = document.getElementById("books");
+  let active = null;
+
+  list.addEventListener("click", (e) => {
+    if (e.target.tagName !== "LI") return;
+
+    if (active) active.classList.remove("active");
+
+    active = e.target;
+    active.classList.add("active");
+  });
+</script>
+
+</body>
+</html>
